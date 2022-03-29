@@ -5,11 +5,11 @@ layout: default
   <header> 
     <div class="title">
       <h2>{{ page.title | escape }}</h2>
-      <p><a href="//github.com/Aurea377/Aurea377.github.io/{{ page.path }}" class="icon"><i class="fas fa-fw fa-edit"></i> Tian</a></p>
+      <p><a href="//aurea377.github.io/aboutme/2022/cv/{{ page.path }}" class="icon"><i class="fas fa-fw fa-edit"></i> Tian</a></p>
     </div>
     <div class="meta">
       <time class="published" datetime="{{ page.date }}">{{ page.date | date: "%d %b %Y %R" }}</time>
-      <a href="{{ site.author.cv }}" class="author"><span class="name">V.{{ site.author.last_name }}</span><img src="{{ site.author.avatar | prepend: site.baseurl }}" alt="ViKapitoshka" /></a>
+      <a href="{{ site.author.cv }}" class="author"><span class="name">{{ site.author.name }}</span><img src="{{ site.author.avatar | prepend: site.baseurl }}" alt="Cao" /></a>
     </div>
   </header>
   {{ content }}
@@ -18,7 +18,7 @@ layout: default
   <footer>
     <ul class="stats">
       <li><a class="icon" href="{{ site.url }}"><i class="fas fa-fw fa-folder"></i> Home Page</a></li>
-      <li><a href="//github.com/Aurea377/Aurea377.github.io/{{ page.path }}" class="icon"><i class="fas fa-fw fa-edit"></i> Edit</a></li>
+      <li><a href="//aurea377.github.io/aboutme/2022/cv/{{ page.path }}" class="icon"><i class="fas fa-fw fa-edit"></i> Edit</a></li>
     </ul>
   </footer>
   

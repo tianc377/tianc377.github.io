@@ -8,8 +8,8 @@ url: "https://aurea377.github.io" # the base hostname & protocol for your site, 
 author:
   name: 'Tian'
   last_name: 'Cao'
-  cv: '//kaptn.ru'
-  avatar: '/images/avatar.png'
+  cv: '//aurea377.github.io/aboutme/2022/cv'
+  avatar: '/images/logo_ct.png'
   github_username:  Aurea377
   email: tiancao_ct@outlook.com
   #vk_id: id201664979
@@ -20,5 +20,3 @@ author:
 markdown: kramdown
 
 permalink: /:categories/:year/:title.html
-
-

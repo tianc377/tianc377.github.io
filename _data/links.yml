@@ -1,6 +1,6 @@
 # blog page sections
 - name: posts
-  href: '/category1/'
+  href: '/posts/'
 
 - name: about me
-  href: '/category2/'
+  href: '/aboutme/'
