@@ -2,7 +2,7 @@ title: CT's log
 description: > # this means to ignore newlines until "baseurl:"
   @Tian <br>
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://aurea377.github.io" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://tianc377.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 
 
 author:
@@ -10,7 +10,7 @@ author:
   last_name: 'Cao'
   cv: '/aboutme'
   avatar: '/images/logo_ct_circle.png'
-  github_username:  Aurea377
+  github_username: tianc377
   email: tiancao_ct@outlook.com
   #vk_id: id201664979
   #telegram_name: vikapitoshka 
