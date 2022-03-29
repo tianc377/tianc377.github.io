@@ -5,7 +5,7 @@ layout: default
   <header> 
     <div class="title">
       <h2>{{ page.title | escape }}</h2>
-      <p><a href="//aurea377.github.io/aboutme/2022/cv/{{ page.path }}" class="icon"><i class="fas fa-fw fa-edit"></i> Tian</a></p>
+      <p><a href="{{ site.author.cv }}" class="icon"><i class="fas fa-fw fa-edit"></i> Tian</a></p>
     </div>
     <div class="meta">
       <time class="published" datetime="{{ page.date }}">{{ page.date | date: "%d %b %Y %R" }}</time>
@@ -18,7 +18,7 @@ layout: default
   <footer>
     <ul class="stats">
       <li><a class="icon" href="{{ site.url }}"><i class="fas fa-fw fa-folder"></i> Home Page</a></li>
-      <li><a href="//aurea377.github.io/aboutme/2022/cv/{{ page.path }}" class="icon"><i class="fas fa-fw fa-edit"></i> Edit</a></li>
+      <!--<li><a href="//github.com/ViKapitoshka/blog/edit/master/{{ page.path }}" class="icon"><i class="fas fa-fw fa-edit"></i> Edit</a></li>-->
     </ul>
   </footer>
   

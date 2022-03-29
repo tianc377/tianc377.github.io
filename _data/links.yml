@@ -4,3 +4,6 @@
 
 - name: about me
   href: '/aboutme/'
+
+- name: others
+  href: '/others/'

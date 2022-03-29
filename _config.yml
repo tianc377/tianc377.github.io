@@ -8,7 +8,7 @@ url: "https://aurea377.github.io" # the base hostname & protocol for your site, 
 author:
   name: 'Tian'
   last_name: 'Cao'
-  cv: '//aurea377.github.io/aboutme/2022/cv'
+  cv: '/aboutme'
   avatar: '/images/logo_ct.png'
   github_username:  Aurea377
   email: tiancao_ct@outlook.com
