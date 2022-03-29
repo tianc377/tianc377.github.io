@@ -1,9 +1,9 @@
 # blog page sections
-- name: shaderposts
+- name: shader posts
   href: '/shaderposts/'
 
 - name: about me
   href: '/aboutme/'
 
-- name: artworks
+- name: art works
   href: '/artworks/'
