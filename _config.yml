@@ -9,12 +9,12 @@ author:
   name: 'Tian'
   last_name: 'Cao'
   cv: '//kaptn.ru'
-  avatar: '/images/avatar.svg'
+  avatar: '/images/avatar.png'
   github_username:  Aurea377
   email: tiancao_ct@outlook.com
   #vk_id: id201664979
   #telegram_name: vikapitoshka 
-  logo: '/images/logo_ct.svg'
+  logo: '/images/logo_ct.png'
 
 # Build settings
 markdown: kramdown
