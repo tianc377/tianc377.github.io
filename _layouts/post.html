@@ -5,7 +5,7 @@ layout: default
   <header> 
     <div class="title">
       <h2>{{ page.title | escape }}</h2>
-      <p><a href="//github.com/ViKapitoshka/blog/edit/master/{{ page.path }}" class="icon"><i class="fas fa-fw fa-edit"></i> Редактировать на GitHub</a></p>
+      <p><a href="//github.com/Aurea377/Aurea377.github.io/{{ page.path }}" class="icon"><i class="fas fa-fw fa-edit"></i> Tian</a></p>
     </div>
     <div class="meta">
       <time class="published" datetime="{{ page.date }}">{{ page.date | date: "%d %b %Y %R" }}</time>
@@ -14,11 +14,11 @@ layout: default
   </header>
   {{ content }}
   
-  <p>Подписывайтесь на наш <a href="http://t.me/vikablog">канал</a> в телеграмме :)
+  <p>Tian <a href="http://t.me/vikablog">
   <footer>
     <ul class="stats">
-      <li><a class="icon" href="{{ site.url }}"><i class="fas fa-fw fa-folder"></i> Главная</a></li>
-      <li><a href="//github.com/ViKapitoshka/blog/edit/master/{{ page.path }}" class="icon"><i class="fas fa-fw fa-edit"></i> Edit</a></li>
+      <li><a class="icon" href="{{ site.url }}"><i class="fas fa-fw fa-folder"></i> Home Page</a></li>
+      <li><a href="//github.com/Aurea377/Aurea377.github.io/{{ page.path }}" class="icon"><i class="fas fa-fw fa-edit"></i> Edit</a></li>
     </ul>
   </footer>
   
@@ -26,10 +26,10 @@ layout: default
 </article>
 <ul class="actions pagination">
   {% if page.previous.url %}
-    <li><a href="{{page.previous.url}}" class="button big previous icon"><i class="fw fas fa-chevron-left"></i> Туда</a></li>
+    <li><a href="{{page.previous.url}}" class="button big previous icon"><i class="fw fas fa-chevron-left"></i> Last</a></li>
   {% endif %}
   {% if page.next.url %}
-    <li><a href="{{page.next.url}}" class="button big next icon">Сюда <i class="fw fas fa-chevron-right"></i></a></li>
+    <li><a href="{{page.next.url}}" class="button big next icon">Next <i class="fw fas fa-chevron-right"></i></a></li>
   {% endif %}
 </ul>
 
