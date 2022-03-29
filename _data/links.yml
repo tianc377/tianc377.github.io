@@ -2,8 +2,8 @@
 - name: shader posts
   href: '/shaderposts/'
 
-- name: about me
-  href: '/aboutme/'
-
 - name: art works
   href: '/artworks/'
+
+- name: about me
+  href: '/aboutme/'
