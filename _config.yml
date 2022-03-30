@@ -20,3 +20,6 @@ author:
 markdown: kramdown
 
 permalink: /:categories/:year/:title.html
+
+plugins:
+  - jemoji
