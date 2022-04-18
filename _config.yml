@@ -16,8 +16,12 @@ author:
   #telegram_name: vikapitoshka 
   logo: '/images/logo_ct.png'
 
+
 # Build settings
 markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
 
 permalink: /:categories/:year/:title.html
 

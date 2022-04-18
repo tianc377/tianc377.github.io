@@ -9,7 +9,7 @@
 	body, input, select, textarea {
 		color: _palette(fg);
 		font-family: _font(family);
-		font-size: 14pt;
+		font-size: 15pt;
 		font-weight: _font(weight);
 		line-height: 1.75;
 
@@ -129,16 +129,18 @@
 	code {
 		background: _palette(border-bg);
 		border: solid 1px _palette(border);
-		font-family: _font(family-fixed);
+		font-family: "Consolas";
 		font-size: 0.9em;
-		margin: 0 0.25em;
-		padding: 0.25em 0.65em;
+		color: rgb(48, 48, 48);
+		font-weight: 500;
+		margin: 0 0.15em;
+		padding: 0.15em 0.3em;
 	}
 
 	pre {
 		-webkit-overflow-scrolling: touch;
-		font-family: _font(family-fixed);
-		font-size: 0.9em;
+		font-family: "Consolas";
+		font-size: 1.0em;
 		margin: 0 0 _size(element-margin) 0;
 
 		code {

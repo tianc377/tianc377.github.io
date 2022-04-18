@@ -13,7 +13,7 @@ youtubeId2: 9OnVEKCszqI
 
 
 
-![the third shot](/post-img/shaderposts/song-of-the-sea/theIsland.jpg){: width="800" }
+![the third shot](/post-img/shaderposts/song-of-the-sea/theIsland.jpg){: width='100%' }
 
 
 
@@ -22,14 +22,21 @@ youtubeId2: 9OnVEKCszqI
 3. [Unreal Engine Layered Material](#unreal-engine-layered-material)
     - [Structure](#structure)
     - [Utilize](#utilize)
-    - [Pros and Cons](#pros-and-cons)
     - [Flexibility and Consistency](#flexibility-and-consistency)
     - [Unfortunately, More samplers](#unfortunately-more-samplers)
     - [Texture Share](#texture-share)
+    - [Shader Complexity](#shader-complexity)
 4. [Custom Shading Model: CTCel](#custom-shading-model-ctcel)
     - [If it's beyond the scope...](#if-its-beyond-the-scope)
     - [C++ files](#c++-files)
     - [Shader files](#shader-files)
+5. [The Sea](#the-sea)
+    - [The Sea Layer](#the-sea-layer)
+7. [Characters](#characters)
+    - [Rigging](#rigging)
+    - [Shading](#shading)
+6. [Foliage](#foliage)
+8. [Other materials](#other-materials)
 
 
 ## The Idea
@@ -39,17 +46,17 @@ youtubeId2: 9OnVEKCszqI
 
 Firstly I downloaded the movie, watched it again, took screenshots and studied the details of the style. Basically, it is flat, overlaying multiple layers of colour, strokes, splatters, dots, and mixing randomly.
 
-![the rock detail](/post-img/shaderposts/song-of-the-sea/theRockDetail.png){: width="400" }
+![the rock detail](/post-img/shaderposts/song-of-the-sea/theRockDetail.png){: width="50%" }
 
 I started to figure out how to make the handpainted watercolour effect of the texture, that dominates the overall impression. So here we go, Substance Designer! I did some research on stylizing textures, and videos from [Stylized Station](https://www.youtube.com/channel/UC7cmH--tFhYduIshTKzQUJQ) really inspired me and were helpful. The key step is <span style="color: #0fc2aa">slope blur</span>, which really gives a very watercolour/guache feeling. Slope blur is available in both SD and SP, and I chose SD to explore the style since it has a clearer structure.  
 
 At the first, I planned to make the whole texture pipeline in SD, but during exploring in SD, I found it was better to mix in the engine directly. I had the experience of using UE layered material workflow for a project to make landscapes, and that approach is very flexible and efficient, which is perfect for this layering artistic style. 
 
-![the SD blend](/post-img/shaderposts/song-of-the-sea/SDblend.jpg){: width="1000" }
+![the SD blend](/post-img/shaderposts/song-of-the-sea/SDblend.jpg){: width='100%' }
 
 
 
-![the rock detail breakdown](/post-img/shaderposts/song-of-the-sea/EgBreakDown.jpg){: width="800" }
+![the rock detail breakdown](/post-img/shaderposts/song-of-the-sea/EgBreakDown.jpg){: width='100%'}
 
 
 ## Unreal Engine Layered Material 
@@ -58,31 +65,31 @@ At the first, I planned to make the whole texture pipeline in SD, but during exp
 The structure of Unreal Engine layered material is like, not lerp the effect in a base material all together but to mix it in the material instance with their provided UI, which is clear, light, and very flexible. It's like you drawing in Photoshop, with all the image layers.
 
 1. **Base Material** with layer setting up.<br />
-![Base Material](/post-img/shaderposts/song-of-the-sea/BaseMaterial.png){: width="800" }<br />
+![Base Material](/post-img/shaderposts/song-of-the-sea/BaseMaterial.png){: width='100%' }<br />
 
 2. **Material Layer Blend asset** creating.<br />
-![blend asset](/post-img/shaderposts/song-of-the-sea/MaterialLayerBlend.png){: width="800" }<br />
+![blend asset](/post-img/shaderposts/song-of-the-sea/MaterialLayerBlend.png){: width='100%'}<br />
 So this asset decides how your current layer and layer below blend together, for example, the checker map here I use, will blend the current layer in the white area, and layer/layers underneath it into the black area.
 
 3. **Material Layer**.<br />
-![material layer](/post-img/shaderposts/song-of-the-sea/MaterialLayer.png){: width="800" }<br />
+![material layer](/post-img/shaderposts/song-of-the-sea/MaterialLayer.png){: width='100%'}<br />
 Material layer asset is where you write your features and the attributes you want to output.
 
 
 
 ### Utilize
 
-![stone MI](/post-img/shaderposts/song-of-the-sea/stoneMI.jpg){: width="800" }<br />
+![stone MI](/post-img/shaderposts/song-of-the-sea/stoneMI.jpg){: width='100%'}<br />
 Take, one of my stone material instance for example, you can see there are 7 layers, each one in charge of different colors and patterns. The material layer blend asset I used most for this project is: <br />
-![noise asset](/post-img/shaderposts/song-of-the-sea/noiseAsset.jpg){: width="400" }<br />
+![noise asset](/post-img/shaderposts/song-of-the-sea/noiseAsset.jpg){: width='50%'}<br />
 which using one noise texture as the main lerp value and with three additional mask modes, almost cover all ways of masking: <br />
-![mask toggle](/post-img/shaderposts/song-of-the-sea/maskToggle.jpg){: width="400" }<br />
-![blend noise](/post-img/shaderposts/song-of-the-sea/blend_noise.jpg){: width="800" }<br />
+![mask toggle](/post-img/shaderposts/song-of-the-sea/maskToggle.jpg){: width='50%'}<br />
+![blend noise](/post-img/shaderposts/song-of-the-sea/blend_noise.jpg){: width='100%'}<br />
 And these are my noise textures using to create those handpainted style materials, except the grunge images, others were created and exported from Substance Designer.<br />
-![noise tex](/post-img/shaderposts/song-of-the-sea/noiseTex.jpg){: width="600" }<br />
+![noise tex](/post-img/shaderposts/song-of-the-sea/noiseTex.jpg){: width='70%' }<br />
 Below are blend assets and layer assets I created for this project:<br />
-![blend_assets](/post-img/shaderposts/song-of-the-sea/blend_assets.jpg){: width="400" }<br />
-![layer_assets](/post-img/shaderposts/song-of-the-sea/layer_assets.jpg){: width="400" }<br />
+![blend_assets](/post-img/shaderposts/song-of-the-sea/blend_assets.jpg){: width='50%'}<br />
+![layer_assets](/post-img/shaderposts/song-of-the-sea/layer_assets.jpg){: width='50%'}<br />
 
 
 ### Flexibility and Consistency
@@ -93,12 +100,16 @@ Obviously, stacking in real-time will produce more samples compared to baking te
 
 ### Texture Share
 [Texture Share](https://docs.unrealengine.com/5.0/en-US/texture-share-in-unreal-engine/) efficiently sends and receives GPU data between processes by bypassing the CPU and its expensive memory-copy operation by keeping the data stored in GPU memory.<br />
-![textureShare2](/post-img/shaderposts/song-of-the-sea/textureShare2.jpg){: width="200" }<br />
+![textureShare2](/post-img/shaderposts/song-of-the-sea/textureShare2.jpg){: width='40%' }<br />
 The below image shows after I turn on the shared texture sampler, a stacking material that 4 layers using the same noise mask, whose sampler reduces from 4 to 1.<br />
-![textureShare](/post-img/shaderposts/song-of-the-sea/textureShare.jpg){: width="400" }<br />
+![textureShare](/post-img/shaderposts/song-of-the-sea/textureShare.jpg){: width='50%' }<br />
 
-
-
+### Shader Complexity
+![shaderComplexity](/post-img/shaderposts/song-of-the-sea/HighresScreenshot00009.png){: width='80%' }<br />
+Basically, all the red objects are with a transparent material, others variate based on the number of layers, for instance, materials of the cliff and the sand dune piled 8 to 9 layers, and shown darker green here, but generally within the ‘good’ scope.<br />
+![fpsRate](/post-img/shaderposts/song-of-the-sea/fps.jpg){: width='80%' }<br />
+In the viewport and the static camera view, if I open the `exponential height fog`, I was getting 55~45 FPS overall, once close it, it rises immediately to about 80 FPS.
+![fpsRate2](/post-img/shaderposts/song-of-the-sea/fps2.jpg){: width='80%' }<br />
 
 
 
@@ -107,17 +118,17 @@ The below image shows after I turn on the shared texture sampler, a stacking mat
 I have to say the most painful experience with Unreal Engine is you cannot add a custom lighting model or custom shader like Unity does, I personally think that is very restricted for technical artists.:face_with_head_bandage: <br />
 I’ve done that in Unreal Engine 4 in the previous studio, I guessed it won't be very differerent in UE5 <br />
 At first, I was hesitant to create a custom shading model or not. I used a blend layer that grabs light direction from the source code into a custom node to make a NOL mask:<br />
-![NoLblend](/post-img/shaderposts/song-of-the-sea/NoLblend.jpg){: width="800" }<br />
+![NoLblend](/post-img/shaderposts/song-of-the-sea/NoLblend.jpg){: width='100%'}<br />
 you can find these short code in `BasePassPixelShader.usf` and use it in custom code node to get the directional light direction and light color with an unlit master material.<br />
 `ResolvedView.DirectionalLightDirection.xyz` <br />
 `ResolvedView.DirectionalLightColor.rgb`<br />
 However, in this way the object is not able to cast a shadow, like the image below, you see there is no shadow on the ground:<br />
-![no shadow](/post-img/shaderposts/song-of-the-sea/no_shadow.png){: width="500" }<br />
+![no shadow](/post-img/shaderposts/song-of-the-sea/no_shadow.png){: width='60%'}<br />
 Thus, I need to add a shading model...:triumph:
 
 
 ### C++ files
-Below is the list of C++ and header files that you need to modify:<br />
+Below is the list of C++ and header files that you need to revise:<br />
 `EngineTypes.h`
 `MaterialShader.cpp`
 `HLSLMaterialTranslator.cpp`
@@ -127,12 +138,12 @@ Below is the list of C++ and header files that you need to modify:<br />
 `ShaderMaterialDerivedHelpers.cpp`
 `ShaderGenerationUtil.cpp`
 
-Read this article, and you will get 90% done with the new shading model: [*Unreal Engine 4 Rendering Part 6: Adding a new Shading Model*](https://medium.com/@lordned/ue4-rendering-part-6-adding-a-new-shading-model-e2972b40d72d)<br />
-However, just one file not mentioned in the article by Matt Hoffman: `ShaderGenerationUtil.cpp`<br />
+Read this article by Matt Hoffman, and you will get 90% done with the new shading model: [*Unreal Engine 4 Rendering Part 6: Adding a new Shading Model*](https://medium.com/@lordned/ue4-rendering-part-6-adding-a-new-shading-model-e2972b40d72d)<br />
+However, in UE5, one file need to be revised additionally: `ShaderGenerationUtil.cpp`<br />
 You need to change three places in this file:<br />
-![shaderGenerationUtil1](/post-img/shaderposts/song-of-the-sea/shaderGenerationUtil.png){: width="600" }<br />
-![shaderGenerationUtil2](/post-img/shaderposts/song-of-the-sea/shaderGenerationUtil(3).png){: width="600" }<br />
-![shaderGenerationUtil2](/post-img/shaderposts/song-of-the-sea/shaderGenerationUtil(2).png){: width="600" }<br />
+![shaderGenerationUtil1](/post-img/shaderposts/song-of-the-sea/shaderGenerationUtil.png){: width='80%'}<br />
+![shaderGenerationUtil2](/post-img/shaderposts/song-of-the-sea/shaderGenerationUtil(3).png){: width="80%" }<br />
+![shaderGenerationUtil2](/post-img/shaderposts/song-of-the-sea/shaderGenerationUtil(2).png){: width="80%" }<br />
 Otherwise, after build, you will see your shading model and able to choose, but it just showing solid black.<br />
 
 
@@ -146,11 +157,57 @@ Below is the list of shader files that you need to modify:<br />
 `ShadingModels.ush`
 `DeferredLightingCommon.ush`
 
-You can just follow Matt Hoffman's article to write the shader files. While for me, I add some additional codes to allow my new shading model available for **Translucent**.  
-![maskedCTCel](/post-img/shaderposts/song-of-the-sea/maskedCTCel.png){: width="600" }<br />
+You can just follow Matt Hoffman's article to write the shader files. While for me, I add some additional codes to allow my new shading model available for <span style="color: #0fc2aa">the Masked blend mode</span> as I need it for my foliages and some parts of characters.  
+![maskedCTCel](/post-img/shaderposts/song-of-the-sea/maskedCTCel.png){: width='80%' }<br />
 
 {% include youtubePlayer.html id=page.youtubeId %}
 
+![Master_CTCel](/post-img/shaderposts/song-of-the-sea/Master_CTCel.png){: width='100%'}<br />
+For this shading model, what I need is simple, I just use the two custom data pin for my Cel NoL offset and Cel shadow intensity. 
+
+Talking back to the shadow cast part, in `DeferredLightingCommon.ush`, add a branch of 
+
+{% highlight glsl %}
+//===== CT CEL SHADING ======
+float3 Attenuation = 1;
+BRANCH
+if (GBuffer.ShadingModelID == SHADINGMODELID_CTCEL)
+{
+    float offset = GBuffer.CustomData.x;
+    //float TerminatorRange = saturate(GBuffer.Roughness - 0.5);
+    
+    //offset = offset * 2 - 1;
+    
+    BRANCH
+    if (offset >= 1)
+    {
+        Attenuation = 1;
+    }
+    else
+    {
+        float NoL = saturate(dot(N, L) *0.5 + 0.5); // overwrite NoL to get more range out of it
+        half NoLOffset = saturate(NoL + offset);
+        float LightAttenuationOffset = saturate( Shadow.SurfaceShadow + offset);
+        //float ToonSurfaceShadow = step(0.5, LightAttenuationOffset);
+
+        Attenuation = step(0.2, NoLOffset) * LightAttenuationOffset;
+    }
+}
+//===== CT CEL SHADING ======
+{% endhighlight %}
+So that I got a new attenuation value that can apply to the original soft shadow (after the `Shadow.SurfaceShadow`):
+{% highlight glsl %}
+LightAccumulator_AddSplit( LightAccumulator, Lighting.Diffuse, Lighting.Specular, Lighting.Diffuse, LightColor * LightMask * Shadow.SurfaceShadow * Attenuation, bNeedsSeparateSubsurfaceLightAccumulation );
+{% endhighlight %}
+
+
+
+<br />
+
+## The Sea
+Apparently the sea 
+
+### The sea layer
 
 
 
@@ -160,9 +217,13 @@ You can just follow Matt Hoffman's article to write the shader files. While for 
 
 
 
-
-
-
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
 
 {% include youtubePlayer.html id=page.youtubeId2 %}
 
