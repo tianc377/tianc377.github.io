@@ -2,6 +2,9 @@
 - name: shader posts
   href: '/shaderposts/'
 
+- name: maya tools
+  href: '/mayatools/'
+
 - name: art works
   href: '/artworks/'
 
