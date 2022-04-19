@@ -40,11 +40,12 @@ youtubeId2: 9OnVEKCszqI
         - [The Foam](#the-foam)
         - [The Ring](#the-Ring)
         - [The Splatter](#the-splatter)
-7. [Characters](#characters)
+7. [Saoirse](#Saoirse)
     - [Rigging](#rigging)
     - [Shading](#shading)
 6. [Foliage](#foliage)
-8. [Other materials](#other-materials)
+8. [Vertex Animated Seagulls]
+(#vertex-animated-seagulls)
 
 
 ## The Idea
@@ -168,7 +169,8 @@ Below is the list of shader files that you need to modify:<br />
 You can just follow Matt Hoffman's article to write the shader files. While for me, I add some additional codes to allow my new shading model available for <span style="color: #0fc2aa">the Masked blend mode</span> as I need it for my foliages and some parts of characters.  
 ![maskedCTCel](/post-img/shaderposts/song-of-the-sea/maskedCTCel.png){: width='80%' }<br />
 
-{% include youtubePlayer.html id=page.youtubeId %}
+
+![CTCel-shadow](/post-img/shaderposts/song-of-the-sea/CTCel-shadow.gif){: width='80%'}<br />
 
 ![Master_CTCel](/post-img/shaderposts/song-of-the-sea/Master_CTCel.png){: width='100%'}<br />
 For this shading model, what I need is simple, I just use the two custom data pin for my Cel NoL offset and Cel shadow intensity. 
@@ -286,6 +288,40 @@ Below are the layer parameters of my sea material instance.
 ![sea-layer-parameters](/post-img/shaderposts/song-of-the-sea/sea-layer-parameters.jpg){: width='80%'}<br />
 So the top layer is a transparent layer as a color layer, and placed same sea wave blend asset there so that the foam edge will appear the movement instead of a straight cutting line where the sea mesh plane intersects with the sand dune mesh.:point_down:<br />
 ![sea-no-edge-masked](/post-img/shaderposts/song-of-the-sea/sea-no-edge-masked.jpg){: width='60%'}<br />
+
+
+<br />
+<br />
+
+### Saoirse
+![saoirse](/post-img/shaderposts/song-of-the-sea/saoirse.gif){: width='80%'}<br />
+I don't have a lot of experiences on modeling, fortunately everything in the film scene really doesn't need a lot of complex 3d models, most of them are some basic shapes or some transformation based on that.<br />
+![unshaded-1](/post-img/shaderposts/song-of-the-sea/unshaded-1.png){: width='60%'}<br />
+
+#### Shading
+The colored part is same with other objects, by using layering materials.
+The Outline part is by using vertex offset along normal direction of a duplicated mesh. In Unity just need an additional pass `cull front` while in UE, I use `TwoSidedSign` and one minus it, plugged the result to the opacity mask, so that the front face will end up to be culled with the value 0. 
+![saoirse-profile](/post-img/shaderposts/song-of-the-sea/saoirse-profile.jpg){: width='80%'}<br />
+
+#### Rigging
+![hair-shot](/post-img/shaderposts/song-of-the-sea/hair-shot.gif){: width='60%'}<br />
+:arrow_up:In the film, her hair moving is very elastic feeling and moving like a ball rotating with swing up and down. Therefore I used bone rigging to mimic the swing effect around an appropriate centre pivot.  
+![saoirse-rig](/post-img/shaderposts/song-of-the-sea/saoirse-rig.gif){: width='60%'}<br />
+
+
+<br />
+
+### Foliage
+![grass](/post-img/shaderposts/song-of-the-sea/grass.gif){: width='60%'}<br />
+There are only grass and trees this scene of the film, both of them are really flat and with single solid color. Thus I make planes with alpha masked, and give function to make billboard effect, allowing the plane rotate always towards the viewer.
+![billboard](/post-img/shaderposts/song-of-the-sea/billboard.jpg){: width='100%'}<br />
+
+### Vertex Animated Seagulls
+![light-house](/post-img/shaderposts/song-of-the-sea/light-house.gif){: width='80%'}<br />
+The seagull with a very simple mesh, and the wings' UV align along the Y axis, so that I can using Y direction UV as a mask, to use a timing sine value as a lerp value to interpolate between the Y and 1-Y value.
+You'll see clearly how it works in the gif below:
+![vertex-ani](/post-img/shaderposts/song-of-the-sea/vertex-ani.gif){: width='100%'}<br />
+Then add this value to the Z channel of the vertex position, done!
 <br />
 <br />
 <br />
@@ -295,4 +331,4 @@ So the top layer is a transparent layer as a color layer, and placed same sea wa
 <br />
 
 <!-- {% include youtubePlayer.html id=page.youtubeId2 %} -->
-
+<!--{% include youtubePlayer.html id=page.youtubeId %}-->
