@@ -32,6 +32,14 @@ youtubeId2: 9OnVEKCszqI
     - [Shader files](#shader-files)
 5. [The Sea](#the-sea)
     - [The Sea Layer](#the-sea-layer)
+        - [Flowmap](#flowmap)
+        - [Parallax](#parallax)
+        - [Distance to nearest face mask, DepthFade, PixelDepth](#distance-to-nearest-face-mask-depthfade-pixeldepth)
+        - [Distance tilling](#distance-tilling)
+    - [The Sea Blend Asset](#the-sea-blend-asset)
+        - [The Foam](#the-foam)
+        - [The Ring](#the-Ring)
+        - [The Splatter](#the-splatter)
 7. [Characters](#characters)
     - [Rigging](#rigging)
     - [Shading](#shading)
@@ -108,7 +116,7 @@ The below image shows after I turn on the shared texture sampler, a stacking mat
 ![shaderComplexity](/post-img/shaderposts/song-of-the-sea/HighresScreenshot00009.png){: width='80%' }<br />
 Basically, all the red objects are with a transparent material, others variate based on the number of layers, for instance, materials of the cliff and the sand dune piled 8 to 9 layers, and shown darker green here, but generally within the ‘good’ scope.<br />
 ![fpsRate](/post-img/shaderposts/song-of-the-sea/fps.jpg){: width='80%' }<br />
-In the viewport and the static camera view, if I open the `exponential height fog`, I was getting 55~45 FPS overall, once close it, it rises immediately to about 80 FPS.
+In the viewport and the static camera view, if I open the `exponential height fog`, I was getting 55~45 FPS overall, once close it, it rises immediately to about 80 FPS.<br />
 ![fpsRate2](/post-img/shaderposts/song-of-the-sea/fps2.jpg){: width='80%' }<br />
 
 
@@ -167,16 +175,13 @@ For this shading model, what I need is simple, I just use the two custom data pi
 
 Talking back to the shadow cast part, in `DeferredLightingCommon.ush`, add a branch of 
 
-{% highlight glsl %}
+{% highlight hlsl %}
 //===== CT CEL SHADING ======
 float3 Attenuation = 1;
 BRANCH
 if (GBuffer.ShadingModelID == SHADINGMODELID_CTCEL)
 {
     float offset = GBuffer.CustomData.x;
-    //float TerminatorRange = saturate(GBuffer.Roughness - 0.5);
-    
-    //offset = offset * 2 - 1;
     
     BRANCH
     if (offset >= 1)
@@ -185,10 +190,9 @@ if (GBuffer.ShadingModelID == SHADINGMODELID_CTCEL)
     }
     else
     {
-        float NoL = saturate(dot(N, L) *0.5 + 0.5); // overwrite NoL to get more range out of it
+        float NoL = saturate(dot(N, L) *0.5 + 0.5); 
         half NoLOffset = saturate(NoL + offset);
         float LightAttenuationOffset = saturate( Shadow.SurfaceShadow + offset);
-        //float ToonSurfaceShadow = step(0.5, LightAttenuationOffset);
 
         Attenuation = step(0.2, NoLOffset) * LightAttenuationOffset;
     }
@@ -204,19 +208,84 @@ LightAccumulator_AddSplit( LightAccumulator, Lighting.Diffuse, Lighting.Specular
 
 <br />
 
-## The Sea
-Apparently the sea 
+## The Sea :ocean:
+Apparently the sea is taking an important role here and in a large portion.<br /> 
+![film-seafoam](/post-img/shaderposts/song-of-the-sea/film-seafoam.jpg){: width='50%'}<br /> 
+In the film, the sea mainly contains two parts: water foam and the textured base colour. The other details are splatters and some wavy lines near the foam. <br /> 
+![foam](/post-img/shaderposts/song-of-the-sea/foam.png){: width='50%'}<br />
+
+<br />
 
 ### The sea layer
+My sea shading contains two assets, one is the layer incharge of the basecolor and the flow moving, depth color variation, etc., named layer sea:<br />
+![layer-sea](/post-img/shaderposts/song-of-the-sea/layer-sea.jpg){: width='100%'}<br />
+
+#### Flowmap
+The first thing I considered is the flow direction of the water, as my landscape is a round shape, flow needs to move towards the center of the land. I use a `flowmap` to distort my water noise texture’s uv.<br /> 
+![flowmapGif](/post-img/shaderposts/song-of-the-sea/flowmap.gif) <br />
+[FlowMap Painter](http://teckartist.com/?page_id=107) is so recommanded to draw your own flowmap:point_down:<br />
+![flowmap-painter](/post-img/shaderposts/song-of-the-sea/flowmap-painter.jpg){: width='50%'}<br />
+
+#### Parallax
+I add some manipulation on the view direction's Z channel to make some fake parallax effect, and plug it into the noise mask's uv, to create a kind of water refraction effect. 
+![parallax-jpg](/post-img/shaderposts/song-of-the-sea/parallax.jpg){: width='100%'}<br />
+![parallax-gif](/post-img/shaderposts/song-of-the-sea/parallax.gif){: width='50%'}<br />
+
+#### Distance to nearest face mask, DepthFade, PixelDepth
+![distance-mask-node](/post-img/shaderposts/song-of-the-sea/distance-mask-node.jpg){: width='60%'}<br />
+Distance to nearest mask give you a mask like below:point_down: <br />
+![distance-mask](/post-img/shaderposts/song-of-the-sea/distance-mask.jpg){: width='60%'}<br />
+I applied the `distance to nearest face` mask as a lerp value to make color variation between blue to green, to differentiate the shallow and deep regions, and also the same mask method to plug into the opacity.<br />
+
+![depthfade-node](/post-img/shaderposts/song-of-the-sea/depthfade-node.jpg){: width='60%'}<br />
+While the `depth fade` operation gives you the mask with depth effect, but I didn't apply it in the sea material, just useful to mention how it works. <br />
+![depthfade](/post-img/shaderposts/song-of-the-sea/depthfade.jpg){: width='60%'}<br />
+![sea-colors](/post-img/shaderposts/song-of-the-sea/sea-colors.jpg){: width='50%'}<br />
+Another Color variation is based on the pixel depth. I need the water showing gradient when in a lower view position.<br />
+![pixel-depth](/post-img/shaderposts/song-of-the-sea/pixel-depth.png){: width='60%'}<br />
+![pixel-depth-nodes](/post-img/shaderposts/song-of-the-sea/pixel-depth.jpg){: width='60%'}<br />
+As a result I got the dark blue at the bottom part of this seals shot :point_down: <br />
+![seal-shot](/post-img/shaderposts/song-of-the-sea/seal-shot.jpg){: width='80%'}<br />
+
+#### Distance tilling
+`Distance tilling` is lerping around by the depth to give different tilling at a different distance,so that when the near area is in a fit tilling, the pattern in the far area won't be too crowded and repeated.<br />
+![distance-tilling-node](/post-img/shaderposts/song-of-the-sea/distance-tilling-node.jpg){: width='100%'}<br />
+![distance-tilling](/post-img/shaderposts/song-of-the-sea/distance-tilling.png){: width='80%'}<br />
+Below, applied with color variation in the near and far area.<br />
+![distance-tilling-color](/post-img/shaderposts/song-of-the-sea/distance-tilling-color.png){: width='80%'}<br />
 
 
+<br />
+
+### The sea blend asset
+Another asset I used to make the sea is a blend layer:<br />
+![blend-seawave](/post-img/shaderposts/song-of-the-sea/blend-seawave.jpg){: width='100%'}<br />
+So this blend asset is used in the layering, I applied it to mask a solid color layer to mask out foam, rings and splatters. There are three toggles, for choosing a type of format. <br />
+
+#### The Foam
+The foam function, was still, by using `DistanceNearestToSurface` node, increasing the power to make it with a harsh edge, and subtracting some distortion noises to make it moving and waving.  <br />
+![foam-nodes](/post-img/shaderposts/song-of-the-sea/foam-nodes.jpg){: width='80%'}<br />
+
+#### The Ring
+![seal-ring](/post-img/shaderposts/song-of-the-sea/seal-ring.gif){: width='80%'}<br />
+For the ring effect, as I already had the ring range that can be created by `DistanceNearestToSurface`, but how to make it moving from each object's center? It need to do something on uvs.     <br />
+![ring-node](/post-img/shaderposts/song-of-the-sea/ring-node.jpg){: width='80%'}<br />
+Looking at the below image, the contact area between each seals and the water surface, is actually a radial uv (created by the `VectorToRadialValue`), and that incoming XY value is not from a world position or mesh UV, but from `DistanceFieldGradient`, which can give you XYZ three channels of the distance nearest surface value. Then, I use this result as a single float, to append with `DistanceToNearestSurface` as the Y value, so that it restricted as the mask range, I can change it as the pattern's width.    <br />
+![ring-uv-node](/post-img/shaderposts/song-of-the-sea/ring-uv-node.jpg){: width='100%'}<br />
+And the texture I used was just a simple strip tex:<br />
+![ring-tex](/post-img/shaderposts/song-of-the-sea/ring-tex.jpg){: width='50%'}<br />
+Besides I plugged the distortion noise into the UV as well, to create the wavy effect.<br />
 
 
+#### The Splatter
+The splatter (what should be... random small foam I guess, not really water splatter) is simply texture with sine wave on uv and some distortion, nothing special. <br />
+![splatter](/post-img/shaderposts/song-of-the-sea/splatter.gif){: width='80%'}<br />
 
-
-
-
-
+#### Assemble together
+Below are the layer parameters of my sea material instance. 
+![sea-layer-parameters](/post-img/shaderposts/song-of-the-sea/sea-layer-parameters.jpg){: width='80%'}<br />
+So the top layer is a transparent layer as a color layer, and placed same sea wave blend asset there so that the foam edge will appear the movement instead of a straight cutting line where the sea mesh plane intersects with the sand dune mesh.:point_down:<br />
+![sea-no-edge-masked](/post-img/shaderposts/song-of-the-sea/sea-no-edge-masked.jpg){: width='60%'}<br />
 <br />
 <br />
 <br />
@@ -225,5 +294,5 @@ Apparently the sea
 <br />
 <br />
 
-{% include youtubePlayer.html id=page.youtubeId2 %}
+<!-- {% include youtubePlayer.html id=page.youtubeId2 %} -->
 
