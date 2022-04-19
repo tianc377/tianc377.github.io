@@ -44,8 +44,7 @@ youtubeId2: 9OnVEKCszqI
     - [Rigging](#rigging)
     - [Shading](#shading)
 6. [Foliage](#foliage)
-8. [Vertex Animated Seagulls]
-(#vertex-animated-seagulls)
+8. [Vertex Animated Seagulls](#vertex-animated-seagulls)
 
 
 ## The Idea
