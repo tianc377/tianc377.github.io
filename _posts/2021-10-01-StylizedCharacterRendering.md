@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Stylized Character Rendering"
-date:   2022-04-01 11:00
+date:   2021-10-01 18:00
 category: shaderposts
 icon: brush-line
 keywords: tag1, tag2
