@@ -1,11 +1,11 @@
 ---
 layout: post
-title:  "Song of the Sea Project"
-date:   2022-04-01 11:00
+title:  "Song of the Sea Project Breakdown"
+date:   2022-04-18 11:00
 category: shaderposts
 icon: ship-fill
 keywords: tag1, tag2
-image: theIsland.jpg
+image: saoirse.gif
 preview: 0
 youtubeId: whFFbZq_geQ
 youtubeId2: 9OnVEKCszqI
@@ -75,13 +75,13 @@ The structure of Unreal Engine layered material is like, not lerp the effect in 
 1. **Base Material** with layer setting up.<br />
 ![Base Material](/post-img/shaderposts/song-of-the-sea/BaseMaterial.png){: width='100%' }<br />
 
-2. **Material Layer Blend asset** creating.<br />
+2. **Material Layer Blend asset**. <br />
 ![blend asset](/post-img/shaderposts/song-of-the-sea/MaterialLayerBlend.png){: width='100%'}<br />
-So this asset decides how your current layer and layer below blend together, for example, the checker map here I use, will blend the current layer in the white area, and layer/layers underneath it into the black area.
+So this asset decides how your current layer and layer below blend together, for example, the checker map here I use, will blend the current layer in the white area, and layer/layers underneath it into the black area.<br />
 
 3. **Material Layer**.<br />
 ![material layer](/post-img/shaderposts/song-of-the-sea/MaterialLayer.png){: width='100%'}<br />
-Material layer asset is where you write your features and the attributes you want to output.
+Material layer asset is where you write your features and the attributes you want to output.<br />
 
 
 
@@ -172,9 +172,9 @@ You can just follow Matt Hoffman's article to write the shader files. While for 
 ![CTCel-shadow](/post-img/shaderposts/song-of-the-sea/CTCel-shadow.gif){: width='80%'}<br />
 
 ![Master_CTCel](/post-img/shaderposts/song-of-the-sea/Master_CTCel.png){: width='100%'}<br />
-For this shading model, what I need is simple, I just use the two custom data pin for my Cel NoL offset and Cel shadow intensity. 
+For this shading model, what I need is simple, I just use the two custom data pin for my Cel NoL offset and Cel shadow intensity. <br />
 
-Talking back to the shadow cast part, in `DeferredLightingCommon.ush`, add a branch of 
+Talking back to the shadow cast part, in `DeferredLightingCommon.ush`, add a new branch of attenuation calculation for the new shading model.<br /> 
 
 {% highlight hlsl %}
 //===== CT CEL SHADING ======
@@ -214,7 +214,9 @@ Apparently the sea is taking an important role here and in a large portion.<br /
 ![film-seafoam](/post-img/shaderposts/song-of-the-sea/film-seafoam.jpg){: width='50%'}<br /> 
 In the film, the sea mainly contains two parts: water foam and the textured base colour. The other details are splatters and some wavy lines near the foam. <br /> 
 ![foam](/post-img/shaderposts/song-of-the-sea/foam.png){: width='50%'}<br />
-
+<br />
+The sea shading in my project:arrow_down: <br />
+![sea-shot](/post-img/shaderposts/song-of-the-sea/sea-shot.gif){: width='100%' }<br />
 <br />
 
 ### The sea layer
@@ -223,12 +225,12 @@ My sea shading contains two assets, one is the layer incharge of the basecolor a
 
 #### Flowmap
 The first thing I considered is the flow direction of the water, as my landscape is a round shape, flow needs to move towards the center of the land. I use a `flowmap` to distort my water noise texture’s uv.<br /> 
-![flowmapGif](/post-img/shaderposts/song-of-the-sea/flowmap.gif) <br />
+![flowmapGif](/post-img/shaderposts/song-of-the-sea/flowmap.gif){: width='60%'} <br />
 [FlowMap Painter](http://teckartist.com/?page_id=107) is so recommanded to draw your own flowmap:point_down:<br />
 ![flowmap-painter](/post-img/shaderposts/song-of-the-sea/flowmap-painter.jpg){: width='50%'}<br />
 
 #### Parallax
-I add some manipulation on the view direction's Z channel to make some fake parallax effect, and plug it into the noise mask's uv, to create a kind of water refraction effect. 
+I add some manipulation on the view direction's Z channel to make some fake parallax effect, and plug it into the noise mask's uv, to create a kind of water refraction effect. <br />
 ![parallax-jpg](/post-img/shaderposts/song-of-the-sea/parallax.jpg){: width='100%'}<br />
 ![parallax-gif](/post-img/shaderposts/song-of-the-sea/parallax.gif){: width='50%'}<br />
 
