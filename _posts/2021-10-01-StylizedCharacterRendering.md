@@ -3,7 +3,7 @@ layout: post
 title:  "Stylized Character Rendering"
 date:   2021-10-01 18:00
 category: shaderposts
-icon: brush-line
+icon: brush
 keywords: tag1, tag2
 image: 1.jpg
 preview: 0
