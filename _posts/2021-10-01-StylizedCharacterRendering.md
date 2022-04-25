@@ -9,7 +9,7 @@ image: 1.jpg
 preview: 0
 ---
 
-<https://blog.kaptn.ru> - demo  
+<https://blog.kaptn.ru> - demo 
 <https://github.com/vikapitoshka/blog/> - repository
 
 [![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)
