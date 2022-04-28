@@ -3,144 +3,240 @@ layout: post
 title:  "Maya Material Manager"
 date:   2022-04-01 11:00
 category: mayatools
-icon: hammer-line
+icon: hammer-line-green
 keywords: tag1, tag2
-image: 1.jpg
-preview: 0
+image: material-manager.jpg
+preview: 1
+youtubeId: 3AM1T0xZiSY
 ---
 
-<https://blog.kaptn.ru> - demo  
-<https://github.com/vikapitoshka/blog/> - repository
 
-[![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)
-[![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.png?v=103)](https://github.com/ellerbrock/open-source-badge/)
-![Future Imperfect Theme preview](https://cdn.rawgit.com/ViKapitoshka/blog/4ccc6d6a/readme_files/screen.png)
 
-1. [Installation](#installation)
-2. [Usage](#usage)
-3. [Content management](#content-management)
-    - [Template](#template)
-    - [Example of post](#example-of-post)
-    - [Category page](#category-page)
-4. [Features](#features)
-    - [Categories](#categories)
-    - [Comments](#comments)
-    - [Icons](#icons)
-    - [Post Image](#post-image)
-    - [Featured image](#featured-image)
-    - [Edit link](#edit-link)
-    - [Web analytics](#web-analytics)
-5. [Upgrading Theme](#upgrading-theme)
-6. [Thanks to the following](#thanks-to-the-following)
-7. [Todo](#todo)
-8. [Donate](#donate)
-9. [Copyright and license](#copyright-and-license)
+1. [Why Need](#why-need)
 
-## Installation 
-1. Download, clone or fork repo `git clone git@github.com:vikapitoshka/blog.git`
-2. Enter the folder: `cd blog/` 
-3. Start Jekyll server: `jekyll s`
+2. [Design of the UI](#design-of-the-ui)
+    - [The draft](#the-draft)
+    - [PyQt](#PyQt)
+3. [Design of the Data Structure](#design-of-the-data-structure)
+    - [Tree Widget](#tree-widget)
+    - [Directory Structure](#directory-structure)
+    - [Tree Widget setData()](#tree-widget-setdata)
+4. [How to Save the Hypershade Network?](#how-to-save-the-hypershade-network)
+    - [Find Material Attributes and Connections](#find-material-attributes-and-connections)
+5. [How to Build the Hypershade Network from Saved Data?](#how-to-build-the-hypershade-network-from-saved-data)
+    - [Get Material Attributes](#get-material-attributes)
+    - [Get Material Connections](#get-material-connections)
+    - [Assign the Material](#assign-the-material)
 
-Access, [localhost:4000](http://localhost:4000)
+{% include youtubePlayer.html id=page.youtubeId %}
+[CT Maya Material Manager](https://youtu.be/3AM1T0xZiSY)
 
-## Usage
-If you're completely new to Jekyll, I recommend checking out the documentation at <http://jekyllrb.com> or there's a tutorial by Smashing Magazine.
+<br />
+## Why Need
 
-If you have any questions please ask me at [GitHub Issues](https://github.com/vikapitoshka/blog/issues).
+Last year when I worked on two NPR projects, 3D artists there used Maya as the modelling tool. The NPR shading has a strict standard on the mesh, for example the normal direction of the mesh was sophisticated manipulated so that the edge of the cartoon shadow would be nice and clean. Artists need to revise frequently in maya scene, and there are usually many sets of the same model, for example one character will have FPS and TPS version, or version for film and in game, besides the game was in early developing stage, revising the whole design of any character usually happens. <br />
+In this circumstances, this is what you will see in their maya file:<br />
+![the-need](/post-img/mayatools/CTMaterialManager/the-need.png){: width="40%" }<br />
+Every time, if an artist want to get a material of a previous character, they need to find that maya file, open that scene, open the hypershade, copy that network to the target maya scene, and every pasted node will be pasted_pasted_pasted…:sweat_smile:<br />
+For myself, I also get tired of assigning a same material repeatedly when I get a new scene, especially when you need to assign about 6 textures... So here it is, I want to make a material manager that can cross different maya sessions. Free to save and apply materials there, and share your saved material to others. <br />
 
-## Content management
-### Template
-Template of posts setting is in `_drafts/template.md`. `Layout` is always named `post`. `Title` is a title of post, writing in quotation marks. `Date` written in the following format: `yyyy-mm-dd hh:mm`. In `category` specifies one category. In `icon` written the name of icon (its in the folder `images`). In `tags` is possible to write multiple tags using a comma. In `image` specify the path to image preview (can not fill). And in `preview` you can write `0` to on the main page didn't show the announcement of the post. 
 
-More details about all features and setting can be view on [here](#features).
 
-### Example of post
-```
-layout: post
-title:  "Lorem"
-date:   2017-06-04 00:00
-category: category_name
-icon: git
-keywords: tag1, tag2
-image: 1.png
-preview: 0
-```
+## Design of the UI
 
-### Category page
-If you want to add a page of category you have to create folder with name of category and file `index.html`, which should contain the following:  
-```
----
-layout: default
-title: Category1
-permalink: /category1/ 
----
+### The Draft
+![draft](/post-img/mayatools/CTMaterialManager/draft.jpg){: width="30%" }<br />
+Before starting, I drew a quick draft of the expecting UI. :speak_no_evil: <br />
+Generally, the left panel is the list of the saved material, the right panel is the image, name and information of the currently selected material, and the bottom, with two main functions, import and apply.  <br />
+### PyQt
+I used PyQt to write the UI. The left side is a tree widget. <br />
+![early-looking](/post-img/mayatools/CTMaterialManager/early-looking.png){: width="50%" }<br />
+Then added two panels at the right side so that one panel is displaying another one is editing.
+![early-looking2](/post-img/mayatools/CTMaterialManager/early-looking2.png){: width="50%" }<br />
+Then added the group button and group widget: <br />
+![early-looking3](/post-img/mayatools/CTMaterialManager/early-looking3.png){: width="50%" }<br />
+So far, the UI is almost there. 
 
-{% include category.html %}
-```
 
-You can see example in [here](https://github.com/vikapitoshka/blog/blob/master/category1) or [here](https://github.com/vikapitoshka/blog/blob/master/category2).
 
-## Features
-### Categories
-In blog page, we categorize posts into several categories by url, all category pages use same template html file - `_includes/category.html`. Links of category in menu is in `_data.links.yml`.
+## Design of the Data Structure
+Now the tricky part, how should I organize the data structure? The data structure decides how I record and how I organize the data I collect, and that should corresponding with the tree widget structure. 
+### Tree Widget
+![group](/post-img/mayatools/CTMaterialManager/group.jpg){: width="30%" }<br />
+This is the tree widget structrue of my material list, and that matches with the directory structure below.
 
-For example: URL is `localhost:4000/category1`. In `_data.links.yml` we define this category named category1, so in `_includes/category.html` we get this URL(/category1/) and change it to my category(category1), then this page are posts about category1.
+### Directory Structure
+![directory](/post-img/mayatools/CTMaterialManager/directory.jpg){: width="20%" }<br />
+Under the library, is the groups folder, under each group folder, are json files and the image of the material.
+So that if I change the directory structure such as changing a material's group, I can just do `shutil.copytree()` and `shutil.rmtree()` operations. Or delete a material or group, just delete the target folders. Then refresh the tree widget by walking through the folders again.  
 
-### Comments
-I use [HyperComments](http://hypercomments.com) instead of other tool, Disqus, so it's slower and don't allows to anonymously send messages. Code of comment is in `_includes/comments` and it included in every post.
+### Tree Widget setData()
 
-### Icons
-For categories I use svg-icons in `images`. Еhe icon is automatically assigned to the post by its category. The icon name must be `category_name.svg`.
+In [**QTreeWidgetItem Class**](https://doc.qt.io/qt-5/qtreewidgetitem.html), use [**setData()**](https://doc.qt.io/qt-5/qtreewidgetitem.html#setData) to save data into the item. 
 
-### Post Image
-All images used in posts that are in `post-image` and its are categorized. For example, images in post of category1's category is in `post-img/category1`. 
+{% highlight hlsl %}
+self.tree_widget_item.setData(1, QtCore.Qt.UserRole + 1, mat)
+{% endhighlight %}
+Where, `mat` is the data I gonna save, which is the list `mat_info` below :point_down::<br />
+{% highlight python %}                        
+mat_info['material_name'] = mat_folder
+mat_info['group'] = group_name
+mat_info['material_path'] = directory + '/' + group_name + '/' + mat_folder
+mat_info['library_path'] = directory + '/'
+mat_info['group_path'] = directory + '/' + group_name + '/'
+mat_info['json_path'] = json_path
+mat_info['attr_data_file_path'] = attr_data_file_path
+mat_info['inventory_file_path'] = inventory_file_path
+mat_info['connection_file_path'] = connection_file_path
+mat_info['image_path'] = image_path
+self.all_dict_by_groups[group_name].append(mat_info)
+{% endhighlight %}
 
-### Featured image
-You can specify the preview image for post in [YAML Front Matter](http://jekyllrb.com/docs/frontmatter/). In front matter called "image" to indicate the name of the image. The picture must be located in a category folder.    
-For example, we write post of category_name's category. In folder `post-img/category_name` put the preview image with the title "1.png" and in front matter write: `image: 1.png`. [Example](https://github.com/ViKapitoshka/blog/blob/master/_posts/2017-06-08-learn-git4.md).
 
-Also, in front matter you can control the announcement of record post. By default, the announcement consists of 35 words. Writing in the front matter called "preview" the number 0, the announcement will not be displayed for this entry. [Example](https://github.com/ViKapitoshka/blog/blob/master/_posts/2017-06-08-learn-git4.md).
+And you can **retrieve** data by using the following steps:
+{% highlight python %}
+def get_current_item_data(self):
+    self.current_item_data = None
+    if self.main_tree_widget.currentItem():
+        self.current_item_data = self.main_tree_widget.currentItem().data(0, QtCore.Qt.UserRole + 1)\
+                            or self.main_tree_widget.currentItem().data(1, QtCore.Qt.UserRole + 1)\
+                            or None 
+{% endhighlight %}
+For example,  `self.current_item_data["material_path"]` will return me the current clicked material's directory path.
+<br />
+<br />
 
-### Edit link
-All posts can be edited by users through link: `github.com/vikapitoshka/blog/edit/master/{{ page.path }}` or `github.com/vikapitoshka/blog/edit/master/{{ post.path }}`. 
+## How to Save the Hypershade Network?
+This is the most tricky part of the tool. There are three parts of it:
+- [x] Get the material's attributes, basically are scalar attributes. If it's a custom shader, get the shader file path, which is also attribute type. 
+- [x] Get the connections. For example, if the material has a texture, it will connect with a `file` node and a `p2d` node.
+![phong](/post-img/mayatools/CTMaterialManager/phong.jpg){: width="80%" }<br />
 
-### Web analytics
-I use [Yandex Metrika](https://metrika.yandex.ru) to do web analytics, you can choose either to realize it, just paste your code in `includes/analytics.html`.
+In the past, I've usually written a short script that can help artists to assign the material with one click, so that they do not need to assign some fixed textures such as cubemaps. While this time, considering it is a generic tool, I don't know what kind of material users would save, and what attributes the shader has, it definitely needs to find a pattern of the possible materials. 
+<br />
 
-## Upgrading Theme
-Blog is always being improved by its users, so sometimes one may need to upgrade.
+### Find Material Attributes and Connections
+The overall idea is
+1. find all the node types used
+2. find all the attributes of each node 
+3. find all the connection details of each node
+<br />
 
-Ensure there's an upstream remote
+so later on the data can be used to recreate each node, assign the attributes, connect the expected nodes.<br />
+This step is done by an iteration function.<br />
+{% highlight python %}
+def list_data(input_nodes,attr_data,connections,inventory,index=0):
+    black_list = ["colorManagementGlobals"]
+    for input_node in input_nodes:
+        node_type = cmds.nodeType(input_node)
+        if node_type not in black_list:
+            attrs = cmds.listAttr(input_node)
+            data = {"nodeType":node_type,"nodeName":input_node,"data":{},"index":index}
+            next_nodes = []
+            if node_type not in inventory.keys():
+                inventory[node_type] = [0,[],index]
+            inventory[node_type][0] = inventory[node_type][0] + 1
+            inventory[node_type][1].append(input_node)
+            inventory[node_type][2] = index
+            index += 1
+            for attr in attrs:
+                try:
+                    connected = cmds.listConnections("{}.{}".format(input_node,attr),p=True,s=True,d=False)
+                    data["data"][attr] = None
+                    if connected:
+                        connect_data = {
+                            "left_node_name":connected[0].split(".")[0],
+                            "left_node_attr":connected[0].split(".")[-1],
+                            "left_node_type":cmds.nodeType(connected[0]),
+                            "right_node_name":input_node,
+                            "right_node_attr":attr,
+                            "right_node_type":node_type
+                        }
+                        if connect_data["left_node_type"] not in black_list:
+                            connections.append(connect_data)
+                        next_nodes.append(connected[0].split(".")[0])
+                    if not connected: 
+                        data["data"][attr] = cmds.getAttr("{}.{}".format(input_node,attr))
+       
+                except:
+                    pass
+            if not data["data"] == {}:
+                attr_data[input_node] = data
+            next_nodes = list(set(next_nodes))
+            
+            if next_nodes:
+                list_data(next_nodes,attr_data,connections,inventory,index)    
+{% endhighlight %}
 
-If `git remote -v` doesn't have an upstream listed, you can do the following to add it:
 
-`git remote add upstream https://github.com/vikapitoshka/blog.git`
-Pull in the latest changes
+The iteration started at the material you selected, and iterated to the sublevel nodes until finished. In the process of iteration, once it is a new node and not on the blacklist, I will collect all the attributes, and find which one is connected, which one is just number. <br />
+For attributes, just save them in `attr_data` dictionary.
+For connected nodes, I recorded the connection information by labelling who is in what direction, and split the node name and attribute name, for the following using. The data is like: 
+<br />
+{% highlight python %}
+...
+    {
+        "left_node_attr": "outColor", 
+        "right_node_name": "dx11Shader2", 
+        "right_node_type": "dx11Shader", 
+        "right_node_attr": "CubeMap", 
+        "left_node_name": "file25", 
+        "left_node_type": "file"
+    }, 
+...
+#cmds.connectAttr('file25.outColor', 'dx11Shader2.CubeMap', f= True)
+{% endhighlight %}
+![left-node](/post-img/mayatools/CTMaterialManager/left-node.jpg){: width="50%" }<br />
 
-`git pull upstream gh-pages`
-There may be merge conflicts, so be sure to fix the files that git lists if they occur. That's it!
+I also created an `inventory` dictionary that records the node that needs to be created when applying the material. It includes the node type, amount of the node type, the instance name of the node type, and index of the node. Like below:
+{% highlight python %}
+"place2dTexture": [
+        4, 
+        [
+            "place2dTexture8", 
+            "place2dTexture7", 
+            "place2dTexture6", 
+            "place2dTexture5"
+        ], 
+        6
+    ]
+{% endhighlight %}
+The shader type node will be given index 0, which is important when creating a node because you need to create a shader first then you can assign other connections to it, otherwise it will show key errors.<br />
 
-## Thanks to the following
-[Jekyll](http://jekyllrb.com/)  
-[HTML5Up](https://html5up.net/)  
-[Font Awesome](http://fontawesome.io/icons/)  
-[HyperComments](http://hypercomments.com)
 
-## TODO
-- [ ] Add 404 page
-- [ ] Search system
-- [x] Add fontawesome 5
-- [ ] Add paginator
+<br />
 
-## Donate
-In `includes/donate.html` you'll see form for donation, includes in every post.  
-Also if this project let you enjoy your blog time, you can give me a cup of coffee :)
+## How to Build the Hypershade Network from Saved Data?
+Now I have data saved in json files of the directory, it's easy to build the network based on that.
 
-[Donate =)](https://money.yandex.ru/to/410013162271067/10)
+### Get Material Attributes
+{% highlight python %}
+...
+for data in attr_data.keys():
+        for attr in attr_data[data]["data"].keys():
+            if attr == "shader":
+                try:
+                    
+                    pmc.setAttr("{}.{}".format(relationship[data],attr),attr_data[data]["data"][attr])
+                except:
+                    pass
+...
+{% endhighlight %}
 
-## Copyright and license
-The theme is taken Future Imperfect Theme from [HTML5 UP](https://html5up.net).
-
-It is under [the MIT license](/LICENSE).
-
-Enjoy :yum:
+### Get Material Connections
+{% highlight python %}
+...
+for connect in connections:
+        try:
+            try:
+                cmds.connectAttr("{}.{}".format(relationship[connect["left_node_name"]],connect["left_node_attr"]),"{}.{}".format(relationship[connect["right_node_name"]],connect["right_node_attr"]),f=True)
+            except:
+                cmds.connectAttr("{}.{}".format(relationship[connect["right_node_name"]],connect["right_node_attr"]),"{}.{}".format(relationship[connect["left_node_name"]],connect["left_node_attr"]),f=True)
+            print('connect:'+"{}.{}".format(relationship[connect["left_node_name"]],connect["left_node_attr"]))
+        except:
+            pass
+...
+{% endhighlight %}
+### Assign the Material
+If I click the `Apply` button, and if I select any mesh, the material will be created and assign on the mesh, otherwise it will appear in the hypershade without assignment. <br />
+![apply-mat](/post-img/mayatools/CTMaterialManager/apply-mat.gif){: width="80%" }<br />

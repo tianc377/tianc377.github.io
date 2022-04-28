@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Plant Grow Shader"
+title:  "PBR Consistency Shader"
 date:   2022-03-03 12:00
 category: shaderposts
 icon: flower-pink
@@ -50,29 +50,15 @@ After the processing, it's ready to generate the textures.
 ### Maya Python
 For the growing, a depth texture is also required, while I use vertex color to deal with this step.
 
-To paint vertex color by hand won't be realistic, and also not accurate. The depth distinguishing depends on the height and also the layering (inner or outside) of the plant, that basically is the distance of every shell(disconnected pieces) from the (0,0,0) point.  <br /> 
+To paint vertex color by hand won't be realistic, and also not accurate. The depth distinguishing depends on the height and also the layering (inner or outside) of the plant, that basically is the distance of every leaf/petal from the (0,0,0) point.  <br /> 
 
-In this particular situation, I need to get every piece of the mesh based on the unit of leaf/petal (a shell), and then to make each vertice in the same leaf/petal(a shell) has a uniform vertex color. If I just iterate based on each vertices' distance to the zero point, it will generate a very smooth gradient from bottom to top<br />
+In this particular situation, I need to get every piece of the mesh based on the unit of leaf/petal, and then to make each vertice in the same leaf/petal has a uniform vertex color. If I just iterate based on each vertices' distance to the zero point, it will generate a very smooth gradient from bottom to top<br />
 ![boundingBoxZ](/post-img/shaderposts/PUBGM/boundingBoxZ.jpg){: width="20%" } <br />
-that will cause the mesh growing with a clear cutting line instead of growing each by each.  <br />
+that will cause the mesh growing with bending and a clear cutting line instead of growing each by each.  <br />
 
-Theoretically, the `separate mesh` operation in Maya can achieve this goal (separate the mesh and paint each shell by distance), however, the mesh’s vertices index were processed in houdini, it will be disrupted if I separate the mesh. <br />
-Therefore, it needs to process not on the level of geometry.<br />
+Theoretically, the `separate mesh` operation in Maya can achieve this goal, however, the mesh’s vertices index were processed in houdini, it will be disrupted if I separate the mesh. <br />
 
-Firstly, how to get the shell? `cmds.polyEvaluate(activeShells=True)` can provide you the shell indices of the *active* component, for example, a selected faces. <br />
-However, to select and query all the faces is not good, it will be very slow once the number of faces is a lot. So I tried to select as less as I can by filtering some faces out. <br />
-I used `cmds.polySelectConstraint(mode=3,type=0x0008,sh=True,where=1)` command to only select the faces on the edge. <br />
-`type = 0x0008` indicates the face. <br />
-`Where = 1`  where=0(off); where=1(on border); where=2(inside).<br />
-The result is like:<br />
-![maya-constraint](/post-img/shaderposts/PUBGM/maya-constraint.jpg){: width="80%" }<br />
-
-I also didn't need all of them, so I skipped by some steps:<br />
-`[0:all_faces_edge.__len__():accuracy]` <br />
-![edge-faces](/post-img/shaderposts/PUBGM/edge-faces.jpg){: width="80%" }<br />
-
-Then I save these selected faces into a list, and iterated one by one to get the *index* of the shell. If the shell index is new, it will add the iterated face on a list, so that I ensured, for example, if there are 5 shells, then only each face from each shell will be added on the list, resulted 5 faces in the list.  <br />
-After I got the faces list, I can use those face position to calculate the distance. I got the max distance of all the vertices first, remaped it as 1, since the color value is from 0-1. Then go through the faces with `cmds.polySelect(extendToShell=i)` where `i` is the *face id*, this can select all the faces of this shell. Then paint the faces with desired color value. <br />
+I get the max distance of all the vertices first, remap it as 1, since the color value is from 0-1, over that or below that will not work. <br />
 ![maya-paintVC](/post-img/shaderposts/PUBGM/maya-paintVC.gif){: width="80%" }<br />
 
 

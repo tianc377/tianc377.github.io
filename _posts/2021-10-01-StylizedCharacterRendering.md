@@ -5,16 +5,9 @@ date:   2021-10-01 18:00
 category: shaderposts
 icon: brush
 keywords: tag1, tag2
-image: 1.jpg
-preview: 0
+image: Luca-silver.png
+preview: 1
 ---
-
-<https://blog.kaptn.ru> - demo 
-<https://github.com/vikapitoshka/blog/> - repository
-
-[![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)
-[![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.png?v=103)](https://github.com/ellerbrock/open-source-badge/)
-![Future Imperfect Theme preview](https://cdn.rawgit.com/ViKapitoshka/blog/4ccc6d6a/readme_files/screen.png)
 
 1. [Installation](#installation)
 2. [Usage](#usage)

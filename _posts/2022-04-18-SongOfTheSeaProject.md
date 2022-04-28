@@ -13,10 +13,6 @@ youtubeId2: 9OnVEKCszqI
 
 
 
-![the third shot](/post-img/shaderposts/song-of-the-sea/theIsland.jpg){: width='100%' }
-
-
-
 1. [The Idea](#the-idea)
 2. [Firstly...](#firstly)
 3. [Unreal Engine Layered Material](#unreal-engine-layered-material)
@@ -45,6 +41,11 @@ youtubeId2: 9OnVEKCszqI
     - [Shading](#shading)
 6. [Foliage](#foliage)
 8. [Vertex Animated Seagulls](#vertex-animated-seagulls)
+
+
+
+![the third shot](/post-img/shaderposts/song-of-the-sea/theIsland.jpg){: width='100%' }
+
 
 
 ## The Idea
