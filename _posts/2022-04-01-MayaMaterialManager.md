@@ -5,7 +5,7 @@ date:   2022-04-01 11:00
 category: mayatools
 icon: hammer-line-green
 keywords: tag1, tag2
-image: material-manager.jpg
+image: material-manager.png
 preview: 1
 youtubeId: 3AM1T0xZiSY
 ---
