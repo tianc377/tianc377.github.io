@@ -8,5 +8,5 @@
 - name: art works
   href: '/artworks/'
 
-- name: about me
-  href: '/aboutme/'
+- name: artist's CV
+  href: '/artistscv/'

@@ -1,7 +1,7 @@
 ---
 layout: post
-title: about me
-permalink: /aboutme/
+title: Artist's CV
+permalink: /artistscv/
 ---
 
 
@@ -15,7 +15,7 @@ permalink: /aboutme/
       
       <td>Tian is a self-driven technical artist who specializes in shader development 
           for game engines and various DCC tools environments. In an intensive studio environment, 
-          Tian has extensive experience with custom tools, art assets pipeline design, 
+          Tian has extensive experience with look dev, custom tools, art assets pipeline design, 
           NPR and PBR through either real-time or offline rendering. With a digital fine art background, 
           Tian draws upon good aesthetics to understand artists' intentions and design, 
           which helps in creating shaders and tools that add value to a project.</td> 
@@ -37,19 +37,19 @@ permalink: /aboutme/
     <table id = "table3">
         <tr>
           <td><img src = "/images/03_Tencent_English logo.png"></td>
-          <td><b>Tencent Games </b></td>
+          <td><h3><b>Tencent Games </b></h3></td>
           <td>2020.8 - present</td>
           <td>Shenzhen, CN</td>
         </tr>
         <tr>
+            <td><b><span style="color: #0fc2aa"> <span style="color: #ffffff">As</span> Techincal Artist</span></b></td>
             <td></td>
-            <td><span style="color: #0fc2aa">as Techincal Artist</span></td>
             <td></td>
             
         </tr>
         <tr>
             <td></td>
-            <td>PUBG Mobile</td>
+            <td><b>PUBG Mobile</b></td>
             <td>2021.10 - present</td>
         </tr>
         <tr>
@@ -84,7 +84,7 @@ permalink: /aboutme/
 <table id = "table3">
     <tr>
       <td><img src = "/images/OCAD_University_Logo.png"></td>
-      <td><b>OCAD University </b></td>
+      <td><h3><b>OCAD University </b></h3></td>
       <td>2016.9 - 2020.5</td>
       <td>Toronto, CA</td>
     </tr>
@@ -224,6 +224,14 @@ permalink: /aboutme/
 <pre> </pre>
 
 
-
+<a id="saveAsPdfBtn" href="https://www.sejda.com/html-to-pdf">Save as PDF</a>
+<script>
+document.getElementById('saveAsPdfBtn').addEventListener('click', function(e){
+  var pageUrl = encodeURIComponent(window.location.href);
+  var opts = ['save-link=' + pageUrl, 'pageOrientation=auto'];
+  window.open('https://www.sejda.com/html-to-pdf?' + opts.join('&'));
+  e.preventDefault();
+});
+</script>
 
 
