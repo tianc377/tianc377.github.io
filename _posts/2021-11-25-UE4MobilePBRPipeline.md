@@ -14,7 +14,7 @@ youtubeId: whFFbZq_geQ
 1. [The Need](#the-need)
 2. [The Mobile BasePass Shader](#the-mobile-base-pass-shader)
     - [Codes Without Macros](#codes-without-macros)
-3. [To See Each Piece](#to-see-each-piece)
+3. [To Visualize Each Piece](#to-visualize-each-piece)
 4. [ComputeIndirect](#computeindirect)
 5. [ENABLE_SKY_LIGHT](#enable_sky_light)
 	- [SkyDiffuseLighting](#skydiffuselighting)
@@ -37,7 +37,7 @@ youtubeId: whFFbZq_geQ
 
 
 
-![pipeline](/post-img/shaderposts/pbr-consistency-shader/pipeline.jpg){: width="90%" }<br />
+![pipeline](/post-img/shaderposts/ue4-pbr-pipeline/pipeline.jpg){: width="90%" }<br />
 
 ## The Need
 It is important for artists to work in a consistent environment no matter in the engine or DCC. Especially when the outsourced team usually doesn’t have the authority to get the project’s engine, they couldn’t test and check the final visual result in the engine after they finished the art assets. Therefore consistency between engine and DCC rendering is essential. Although DCC software usually comes with its own PBR default shader, the different engine has different render pipeline and the different project has its own shading strategy besides shading is different on mobile and PC, a custom consistency shader is needed. <br />
@@ -176,13 +176,12 @@ void Main(
 {% endhighlight %}
 
 
-## To See Each Piece
-It's hard to know what's going on by just watching the codes. So let's just go to the usf file and at the end of the code, return the specific parameter that you want to see, for instance:<br />
-![to-see](/post-img/shaderposts/pbr-consistency-shader/to-see.jpg){: width="50%" }<br />
-And go back to the engine, just move a node in the master material, the shader will compile.
-
+## To Visualize Each Piece
+It's hard to know what's going on by just watching the codes. So let's just go to the usf file return the specific parameter that you want to see, for instance:<br />
+![to-see](/post-img/shaderposts/ue4-pbr-pipeline/to-see.jpg){: width="50%" }<br />
+And go back to the engine, just make some minor changes, such as moving a node in the master material, then click apply, the shader will compile.<br />
 Here I used a standard PBR material in a simple lighting environment, containing a directional light, a skylight, and a background plane. The complete Lit output is:<br />
-![lit](/post-img/shaderposts/pbr-consistency-shader/lit.png){: width="70%" }<br />
+![lit](/post-img/shaderposts/ue4-pbr-pipeline/lit.png){: width="70%" }<br />
 
 
 
@@ -208,13 +207,13 @@ half ComputeIndirect(FVertexFactoryInterpolantsVSToPS Interpolants, float3 Diffu
 	...
 {% endhighlight %}
 This function samples the lightmap for static mesh with baked light. Notice that for mobile it is `LQ_TEXTURE_LIGHTMAP`. Here I don't have any lightmaps, the result is just black: <br />
-![black.png](/post-img/shaderposts/pbr-consistency-shader/black.png){: width="50%" }<br />
+![black.png](/post-img/shaderposts/ue4-pbr-pipeline/black.png){: width="50%" }<br />
 
 <br />
 
 ## ENABLE_SKY_LIGHT
 Then it comes **IndirectIrradiance**:<br />
-![codes(3).png](/post-img/shaderposts/pbr-consistency-shader/codes(3).png){: width="80%" }<br />
+![codes(3).png](/post-img/shaderposts/ue4-pbr-pipeline/codes(3).png){: width="80%" }<br />
 The **IndirectIrradiance** is calculated under **ENABLE_SKY_LIGHT**:
 {% highlight hlsl %}
 #if ENABLE_SKY_LIGHT
@@ -227,15 +226,15 @@ The **IndirectIrradiance** is calculated under **ENABLE_SKY_LIGHT**:
 Where,<br />
 ### SkyDiffuseLighting
 `half3 SkyDiffuseLighting`<br />
-![sky-diffuse-lighting](/post-img/shaderposts/pbr-consistency-shader/sky-diffuse-lighting.jpg){: width="40%" }<br />
+![sky-diffuse-lighting](/post-img/shaderposts/ue4-pbr-pipeline/sky-diffuse-lighting.jpg){: width="40%" }<br />
 
 ### DiffuseLookup
 `half3 DiffuseLookup`<br />
-![diffuse-lookup](/post-img/shaderposts/pbr-consistency-shader/diffuse-lookup.jpg){: width="40%" }<br />
+![diffuse-lookup](/post-img/shaderposts/ue4-pbr-pipeline/diffuse-lookup.jpg){: width="40%" }<br />
 
 ### IndirectIrradiance
 `IndirectIrradiance`<br />
-![indirect-irradiance](/post-img/shaderposts/pbr-consistency-shader/indirect-irradiance.png){: width="40%" }<br />
+![indirect-irradiance](/post-img/shaderposts/ue4-pbr-pipeline/indirect-irradiance.png){: width="40%" }<br />
 **IndirectIrradiance** will be used later in **SpecularIBL**
 
 <br />
@@ -248,7 +247,7 @@ Color += (Shadow) * MobileDirectionalLight.DirectionalLightColor.rgb * (Lighting
 {% endhighlight %}
 Where Color += the `shadow`, directional light color, `Lighting.Diffuse` and `Lighting.Specular`and the directional light specular scale.
 Let's output the result of it: <br />
-![codes](/post-img/shaderposts/pbr-consistency-shader/codes.png){: width="80%" }<br />
+![codes](/post-img/shaderposts/ue4-pbr-pipeline/codes.png){: width="80%" }<br />
 You see that the shading is almost done except lacking of some sky light in the shadow area. So, what has been done in that two lines of code?<br />
 Firstly, lets see the **FMobileDirectLighting Lighting** in `\Engine\Shaders\Private\MobileShadingModels.ush`.<br />
 
@@ -258,14 +257,14 @@ Firstly, lets see the **FMobileDirectLighting Lighting** in `\Engine\Shaders\Pri
 - Looks like:
 
 `Lighting.Specular`<br />
-![lighting-specular](/post-img/shaderposts/pbr-consistency-shader/lighting-specular.png){: width="50%" }<br />
+![lighting-specular](/post-img/shaderposts/ue4-pbr-pipeline/lighting-specular.png){: width="50%" }<br />
 
 ### Lighting.Diffuse
 - Calculated in `MobileShadingModels.ush`, is in the struct of **FMobileDirectLighting**. 
 - Looks like:
 
 `Lighting.Diffuse`<br />
-![lighting-diffuse](/post-img/shaderposts/pbr-consistency-shader/lighting-diffuse.png){: width="50%" }<br />
+![lighting-diffuse](/post-img/shaderposts/ue4-pbr-pipeline/lighting-diffuse.png){: width="50%" }<br />
 
 Below is the part **FMobileDirectLighting Lighting** in `\Engine\Shaders\Private\MobileShadingModels.ush`<br />
 {% highlight hlsl %}
@@ -281,7 +280,7 @@ Lighting.Diffuse = NoL * ShadingModelContext.DiffuseColor;
 ...
 {% endhighlight %}
 **Lighting.Specular + Lighting.Diffuse** will looks like:<br />
-![diffuse-plus-specular](/post-img/shaderposts/pbr-consistency-shader/diffuse-plus-specular.jpg){: width="50%" }<br />
+![diffuse-plus-specular](/post-img/shaderposts/ue4-pbr-pipeline/diffuse-plus-specular.jpg){: width="50%" }<br />
 
 
 ### CalcSpecular()
@@ -322,22 +321,22 @@ Color += SpecularIBL * ShadingModelContext.SpecularColor;
 ...
 {% endhighlight %}
 
-This is the specular created by image-based lighting, showing when your skylight sets to ![cubemap](/post-img/shaderposts/pbr-consistency-shader/cubemap.jpg){: width="30%" }<br />
+This is the specular created by image-based lighting, showing when your skylight sets to ![cubemap](/post-img/shaderposts/ue4-pbr-pipeline/cubemap.jpg){: width="30%" }<br />
 Which looks like:<br />
 `SpecularIBL`<br />
-![specularIBL](/post-img/shaderposts/pbr-consistency-shader/SpecularIBL.jpg){: width="50%" }<br />
+![specularIBL](/post-img/shaderposts/ue4-pbr-pipeline/SpecularIBL.jpg){: width="50%" }<br />
 
 Later,  **SpecularIBL** is multiplied with [**ShadingModelContext.SpecularColor**](#diffusecolor-specpreenvbrdf-specularcolor) and add on to the `Color`.<br />
 Which looks like:<br />
 `SpecularIBL * ShadingModelContext.SpecularColor` <br />
-![specularibl-specularcolor](/post-img/shaderposts/pbr-consistency-shader/specularibl-specularcolor.jpg){: width="50%" }<br />
+![specularibl-specularcolor](/post-img/shaderposts/ue4-pbr-pipeline/specularibl-specularcolor.jpg){: width="50%" }<br />
 
 Then add it on the `Color`:<br />
 `Color += SpecularIBL * ShadingModelContext.SpecularColor;`<br />
-![color+specularibl](/post-img/shaderposts/pbr-consistency-shader/color+specularibl.jpg){: width="50%" }<br />
+![color+specularibl](/post-img/shaderposts/ue4-pbr-pipeline/color+specularibl.jpg){: width="50%" }<br />
 
 See the metal necklace, it turns from black to silver with the light of cubemap after adding the `SpecularIBL`.<br />
-``![necklace](/post-img/shaderposts/pbr-consistency-shader/necklace.jpg){: width="30%" }  ![necklace2](/post-img/shaderposts/pbr-consistency-shader/necklace2.jpg){: width="30%" }<br />
+``![necklace](/post-img/shaderposts/ue4-pbr-pipeline/necklace.jpg){: width="30%" }  ![necklace2](/post-img/shaderposts/ue4-pbr-pipeline/necklace2.jpg){: width="30%" }<br />
 
 
 <br />
@@ -349,13 +348,13 @@ FMobileDirectLighting Lighting = MobileIntegrateBxDF(ShadingModelContext, GBuffe
 Color += min(65000.0, (Attenuation) * LightColorAndFalloffExponent.rgb * (1.0 / PI) * (Lighting.Diffuse + Lighting.Specular * SpotLightDirectionAndSpecularScale.w));		
 {% endhighlight %}
 `AccumulateLightingOfDynamicPointLight`<br />
-![accumulateLight](/post-img/shaderposts/pbr-consistency-shader/accumulateLight.jpg){: width="50%" }<br />
+![accumulateLight](/post-img/shaderposts/ue4-pbr-pipeline/accumulateLight.jpg){: width="50%" }<br />
 
 Then scroll down, there is another **ENABLE_SKY_LIGHT** macro, which does this:
 {% highlight hlsl %}
 Color += SkyDiffuseLighting * half3(ResolvedView.SkyLightColor.rgb) * ShadingModelContext.DiffuseColor * MaterialAO;
 {% endhighlight %}
-This line uses of the `SkyDiffuseLighting` we got in the last [**ENABLE_SKY_LIGHT**](#enable_sky_light) macro part before, and multiplied with skylight color![skylight-color](/post-img/shaderposts/pbr-consistency-shader/skylight-color.jpg){: width="30%" }, also multiplied with `ShadingModelContext.DiffuseColor * MaterialAO`. <br />
+This line uses of the `SkyDiffuseLighting` we got in the last [**ENABLE_SKY_LIGHT**](#enable_sky_light) macro part before, and multiplied with skylight color![skylight-color](/post-img/shaderposts/ue4-pbr-pipeline/skylight-color.jpg){: width="30%" }, also multiplied with `ShadingModelContext.DiffuseColor * MaterialAO`. <br />
 We already seen [**ShadingModelContext.SpecularColor**](#shadingmodelcontextspecularcolor) in the `SpecularIBL` part, and here we see [**ShadingModelContext.DiffuseColor**](#shadingmodelcontextdiffusecolor). Read below to find what's their function is:
 <br />
 
@@ -380,7 +379,7 @@ struct FMobileShadingModelContext
 - Looks like:<br />
 
 `ShadingModelContext.DiffuseColor`<br />
-![diffusecolor](/post-img/shaderposts/pbr-consistency-shader/diffusecolor.png){: width="60%" }<br />
+![diffusecolor](/post-img/shaderposts/ue4-pbr-pipeline/diffusecolor.png){: width="60%" }<br />
 
 ### ShadingModelContext.SpecPreEnvBrdf
 - Calculated in `MobileShadingModels.ush`. 
@@ -388,7 +387,7 @@ struct FMobileShadingModelContext
 - Which makes  the nonmetal part black and metal part lighter, so that when it applied with `SpecularIBL`, it makes metal part receive more IBL lights:<br />
 
 `ShadingModelContext.SpecPreEnvBrdf`<br />
-![SpecPreEnvBrdf.png](/post-img/shaderposts/pbr-consistency-shader/SpecPreEnvBrdf.png){: width="60%" }<br />
+![SpecPreEnvBrdf.png](/post-img/shaderposts/ue4-pbr-pipeline/SpecPreEnvBrdf.png){: width="60%" }<br />
 
 
 ### ShadingModelContext.SpecularColor
@@ -397,7 +396,7 @@ struct FMobileShadingModelContext
 - Which 'means we have plausible Fresnel and roughness behavior for image based lighting', according to [Physically Based Shading on Mobile](https://www.unrealengine.com/en-US/blog/physically-based-shading-on-mobile)
 
 `ShadingModelContext.SpecularColor`<br />
-![specularcolor](/post-img/shaderposts/pbr-consistency-shader/specularcolor.png){: width="60%" }<br />
+![specularcolor](/post-img/shaderposts/ue4-pbr-pipeline/specularcolor.png){: width="60%" }<br />
 
 Below is the relative codes of **ShadingModelContext.SpecularColor** and **ShadingModelContext.DiffuseColor** in `\Engine\Shaders\Private\MobileShadingModels.ush`<br />
 
