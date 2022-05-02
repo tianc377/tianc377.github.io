@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "UE4 PBR Consistency Shader in SubstancePainter/Maya"
+title: "UE4 Consistency Shader in SubstancePainter/Maya"
 date:   2021-12-15 12:00
 category: shaderposts
 icon: scale
@@ -24,8 +24,8 @@ youtubeId: whFFbZq_geQ
         - [ToneMapping](#tonemapping)
 
 3. [Maya Unreal-like PBR Shader](#maya-unreal-like-pbr-shader)
-
-
+4. [NPR Consistency Shader](#npr-consistency-shader)
+5. [Marmoset Unreal-like PBR Shader](#marmoset-unreal-like-pbr-shader)
 
 
 ## The Need
@@ -294,9 +294,9 @@ With same approach, it's easy to develop an Unreal-like Maya PBR shader as well.
 
 
 
+## NPR Consistency Shader
+![apep](/post-img/shaderposts/pbr-consistency-shader/apep.png){: width="100%" } <br />
+Cel shader cross platform. In UE4, SP, Maya, from left to right.<br />
 
-<!-->5. [Marmoset Unreal-like PBR Shader](#marmoset-unreal-like-pbr-shader)
-6. [Maya NPR Shader](#maya-npr-shader)
-7. [Substance NPR Shader](#substance-npr-shader)<-->
-
-
+## Marmoset Unreal-like PBR Shader
+![marmoset](/post-img/shaderposts/pbr-consistency-shader/marmoset.png){: width="80%" } <br />

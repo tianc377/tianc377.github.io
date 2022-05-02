@@ -24,7 +24,7 @@ youtubeId2: 9OnVEKCszqI
 
 
 ## The Task
-This plant grow material was for a video project of PUBGM, it needed flowers to grow from leaves to leaves and with a controllable spreading direction.  
+This plant grow material was for a video project of *PUBG Mobile*, it needed flowers to grow from leaves to petals and with a controllable spreading direction.  
 
 ## Houdini Pivot Painter 
 
