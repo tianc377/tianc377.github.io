@@ -10,7 +10,7 @@ preview: 0
 youtubeId: 8m79FPuX3z4
 
 ---
-
+*This Page has a lot of GIF files, it might take time to load them. 
     
 This Post is a collection of special materials, VFX, scene components, etc.
 
