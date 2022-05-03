@@ -11,7 +11,7 @@ youtubeId: whFFbZq_geQ
 youtubeId2: 9OnVEKCszqI
 ---
 
-
+This post shows rendered images and GIFs of my personal project Song of the Sea. See the technique breakdown post at [Song of the Sea Project Breakdown](https://tianc377.github.io/shaderposts/2022/SongOfTheSeaProject.html)
 
 ![saoirse-shot](/post-img/shaderposts/song-of-the-sea/saoirse.gif){: width='100%' }<br />
 ![seal-shot](/post-img/shaderposts/song-of-the-sea/seal-shot.gif){: width='100%' }<br />

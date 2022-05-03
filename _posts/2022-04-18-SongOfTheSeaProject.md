@@ -14,19 +14,18 @@ youtubeId2: 9OnVEKCszqI
 
 
 1. [The Idea](#the-idea)
-2. [Firstly...](#firstly)
-3. [Unreal Engine Layered Material](#unreal-engine-layered-material)
+2. [Unreal Engine Layered Material](#unreal-engine-layered-material)
     - [Structure](#structure)
     - [Utilize](#utilize)
     - [Flexibility and Consistency](#flexibility-and-consistency)
     - [Unfortunately, More samplers](#unfortunately-more-samplers)
     - [Texture Share](#texture-share)
     - [Shader Complexity](#shader-complexity)
-4. [Custom Shading Model: CTCel](#custom-shading-model-ctcel)
+3. [Custom Shading Model: CTCel](#custom-shading-model-ctcel)
     - [If it's beyond the scope...](#if-its-beyond-the-scope)
     - [C++ files](#c++-files)
     - [Shader files](#shader-files)
-5. [The Sea](#the-sea)
+4. [The Sea](#the-sea)
     - [The Sea Layer](#the-sea-layer)
         - [Flowmap](#flowmap)
         - [Parallax](#parallax)
@@ -36,11 +35,11 @@ youtubeId2: 9OnVEKCszqI
         - [The Foam](#the-foam)
         - [The Ring](#the-Ring)
         - [The Splatter](#the-splatter)
-7. [Saoirse](#Saoirse)
+5. [Saoirse](#Saoirse)
     - [Rigging](#rigging)
     - [Shading](#shading)
 6. [Foliage](#foliage)
-8. [Vertex Animated Seagulls](#vertex-animated-seagulls)
+7. [Vertex Animated Seagulls](#vertex-animated-seagulls)
 
 
 
@@ -50,8 +49,6 @@ youtubeId2: 9OnVEKCszqI
 
 ## The Idea
 :ocean:*Song of the Sea*:ocean: is one of my favorite animation films. The special art style with watercolor is so interesting and appealing, which really motivates me to make a 3D scene to build the iconic landscape of the film in the game engine. 
-
-## Firstly... 
 
 Firstly I downloaded the movie, watched it again, took screenshots and studied the details of the style. Basically, it is flat, overlaying multiple layers of colour, strokes, splatters, dots, and mixing randomly.
 
