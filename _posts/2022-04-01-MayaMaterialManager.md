@@ -74,7 +74,7 @@ So that if I change the directory structure such as changing a material's group,
 
 In [**QTreeWidgetItem Class**](https://doc.qt.io/qt-5/qtreewidgetitem.html), use [**setData()**](https://doc.qt.io/qt-5/qtreewidgetitem.html#setData) to save data into the item. 
 
-{% highlight hlsl %}
+{% highlight python %}
 self.tree_widget_item.setData(1, QtCore.Qt.UserRole + 1, mat)
 {% endhighlight %}
 Where, `mat` is the data I gonna save, which is the list `mat_info` below :point_down::<br />

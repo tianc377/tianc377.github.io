@@ -36,7 +36,7 @@ youtubeId3: 9DwjalmyKbE
     - [The Innerline](#the-innerline)
         - [The Fixed Innerline](#the-fixed-innerline)
         - [The Dynamic Innerline](#the-dynamic-innerline)
-3. [Other Explorations](#other-exporations)
+3. [Other Explorations](#other-explorations)
     
 
 ## Ace Force and Under One Person Projects
@@ -159,6 +159,9 @@ For `Under One Person` project, the main character's clothing is loose and soft.
 
 {% include youtubePlayer.html id=page.youtubeId2 %}
 [PBR Character Style Exploration in Blender](https://youtu.be/atztUZg_GiY)<br />
+
+![wy-blender](/post-img/shaderposts/character-shading/wy-blender.png){: width="60%" }<br />
+<span style="font-size:0.8em;">Style exploration in **Blender**</span>
 
 {% include youtubePlayer.html id=page.youtubeId3 %}
 [PBR Merged Cel Shading Character](https://youtu.be/9DwjalmyKbE)
