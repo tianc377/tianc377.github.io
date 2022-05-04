@@ -53,6 +53,9 @@ This Post is a collection of special materials, VFX, scene components, etc.
 ![wzq](/post-img/shaderposts/collections/wzq.gif){: width="50%" }<br />
 <span style="font-size:0.8em;">Distortion fx shader</span>
 
+![hatching](/post-img/shaderposts/collections/hatching.gif){: width="80%" }<br />
+<span style="font-size:0.8em;">A radial hatching line style post-process material </span>
+
 ![lantern](/post-img/shaderposts/collections/lantern.gif){: width="40%" }<br />
 <span style="font-size:0.8em;">A swing lantern shader with fake emission</span>
 
