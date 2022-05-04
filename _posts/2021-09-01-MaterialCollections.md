@@ -8,6 +8,7 @@ keywords: tag1, tag2
 image: collections.jpg
 preview: 0
 youtubeId: 8m79FPuX3z4
+youtubeId2: kELv_oin_KI
 
 ---
 *This Page has a lot of GIF files, it might take time to load them. 
@@ -72,3 +73,6 @@ This Post is a collection of special materials, VFX, scene components, etc.
 
 ![holography](/post-img/shaderposts/collections/Holography.gif){: width="70%" }<br />
 <span style="font-size:0.8em;">An iridescent material </span>
+
+{% include youtubePlayer.html id=page.youtubeId2 %}
+[Leaving footprints in the sand](https://youtu.be/kELv_oin_KI)
