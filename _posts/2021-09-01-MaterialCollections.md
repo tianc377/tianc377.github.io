@@ -79,3 +79,6 @@ This Post is a collection of special materials, VFX, scene components, etc.
 
 {% include youtubePlayer.html id=page.youtubeId2 %}
 [Leaving footprints in the sand](https://youtu.be/kELv_oin_KI)
+
+![trailing](/post-img/shaderposts/collections/trailing.gif){: width="70%" }<br />
+<span style="font-size:0.8em;">A trailing effect made in shader, position displacement transfered into the shader by a C# script </span>
