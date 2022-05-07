@@ -287,3 +287,5 @@ for connect in connections:
 ### Assign the Material
 If I click the `Apply` button, and if I select any mesh, the material will be created and assign on the mesh, otherwise it will appear in the hypershade without assignment. <br />
 ![apply-mat](/post-img/mayatools/CTMaterialManager/apply-mat.gif){: width="80%" }<br />
+
+

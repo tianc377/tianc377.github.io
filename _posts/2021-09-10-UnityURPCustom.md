@@ -93,3 +93,4 @@ Therefore I wrote a custom render feature to get a pure white buffer that silhou
 ![buffer](/post-img/shaderposts/unity-urp/newbuffer.png){: width="70%" }<br />
 then pass that buffer to my shader, then I could manipulated the screen uv with the influence of normal, view direction and pass that sample point to that texture, to get a constant, evenly rim light that will not appear in undesired area:<br />
 ![rimlight](/post-img/shaderposts/unity-urp/rimlight.gif){: width="70%" }<br />
+
