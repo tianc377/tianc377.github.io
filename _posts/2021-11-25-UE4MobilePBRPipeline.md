@@ -40,8 +40,8 @@ youtubeId: whFFbZq_geQ
 ![pipeline](/post-img/shaderposts/ue4-pbr-pipeline/pipeline.jpg){: width="90%" }<br />
 
 ## The Need
-It is important for artists to work in a consistent environment no matter in the engine or DCC. Especially when the outsourced team usually doesn’t have the authority to get the project’s engine, they couldn’t test and check the final visual result in the engine after they finished the art assets. Therefore consistency between engine and DCC rendering is essential. Although DCC software usually comes with its own PBR default shader, the different engine has different render pipeline and the different project has its own shading strategy besides shading is different on mobile and PC, a custom consistency shader is needed. <br />
-To do that, it needs a well understanding of the engine shading pipeline. <br />
+No matter developing shader in NPR or PBR, a well-understanding of the default shading pipeline is important, especially in Unreal Engine where all the shader things are packed in their source codes. 
+To manipulate the default pipeline or create your own lighting model, it needs a well understanding of the engine shading pipeline.<br />
 
 
 ## The Mobile BasePass Shader

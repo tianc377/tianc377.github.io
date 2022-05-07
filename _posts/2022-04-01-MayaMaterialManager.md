@@ -21,9 +21,11 @@ youtubeId: 3AM1T0xZiSY
     - [Tree Widget](#tree-widget)
     - [Directory Structure](#directory-structure)
     - [Tree Widget setData()](#tree-widget-setdata)
-4. [How to Save the Hypershade Network?](#how-to-save-the-hypershade-network)
+4. [Create the Shaderball Image](#create-the-shaderball-image)
+    - [QThread](#qthread)
+5. [How to Save the Hypershade Network?](#how-to-save-the-hypershade-network)
     - [Find Material Attributes and Connections](#find-material-attributes-and-connections)
-5. [How to Build the Hypershade Network from Saved Data?](#how-to-build-the-hypershade-network-from-saved-data)
+6. [How to Build the Hypershade Network from Saved Data?](#how-to-build-the-hypershade-network-from-saved-data)
     - [Get Material Attributes](#get-material-attributes)
     - [Get Material Connections](#get-material-connections)
     - [Assign the Material](#assign-the-material)
@@ -57,7 +59,52 @@ Then added the group button and group widget: <br />
 ![early-looking3](/post-img/mayatools/CTMaterialManager/early-looking3.png){: width="50%" }<br />
 So far, the UI is almost there. 
 
+## Create the Shaderball Image
 
+{% highlight python %}
+def create_image(self, material_folder, directory=DIRECTORY):
+    view = mel.eval("string $null = $gShaderBallEditor")
+    
+    cmds.modelEditor(view, e=True, acg= directory + '/ShaderBall_my.obj')  
+    cmds.modelEditor(view, e=True, rcc =True) 
+    cmds.modelEditor(view, e=True, capture=material_folder + '/image.png')
+
+    return os.path.join(material_folder + '/image.png')
+{% endhighlight %}
+I called the window `gShaderBallEditor`, which is the material viewport of the Hypershade, and substituted the mesh to my own `/ShaderBall_my.obj`, and then took a capture of it.
+However, I met a tricky problem which was, that when I clicked the `import` button, the saved image won't show in the panel, but if I continued importing another material, the image of the last material would show. Firstly I guess it was because the refresh function was called when I import a new material, but it doesn't make sense as I called the same refresh function right away after importing the current material. <br />
+![bug](/post-img/mayatools/CTMaterialManager/bug.jpg){: width="50%" }<br />
+So I was considering, that it might be when Maya was trying to grab the image, there was no image existing. Why? I asked a senior TD, he told me it might be there are two threads. One is the main thread, Maya, and another one is the Hypershade Material Viewport thread, when the import function is executed, the createImage function and grabImage function are called at the same time, but in reality, there are millisecond differences between each other, that's why Maya grab nothing. <br />
+
+### QThread
+Thus, to solve this problem, I need to make Maya thread wait for the Hypershade thread, and once the Hypershade thread finishes (once detected the image file generated in the directory) it emits a signal to the main thread, then Maya grabs the image. <br />
+- [ ]  import `QThread`
+- [ ]  check if the image file is already exist, if does, emit the signal.
+    {% highlight python %}
+    class CheckFileExists(QObject):
+        exist_signal = Signal()
+        def __init__(self,path):
+            super(CheckFileExists, self).__init__()
+            self.path = path
+            
+        def work(self):
+            for i in xrange(2):
+                time.sleep(1)
+                if os.path.exists(self.path) and os.path.getsize(self.path) > 0:
+                    self.exist_signal.emit()
+                    break
+    {% endhighlight %}
+
+- [ ] in import material function, add:
+    {% highlight python %}
+    self.thread = QThread()
+    self.worker = saveData.CheckFileExists(image_path)
+    self.worker.moveToThread(self.thread)
+    self.thread.started.connect(self.worker.work)
+    self.worker.exist_signal.connect(self.thread.quit) #quit .CheckFileExists()
+    self.worker.exist_signal.connect(self.refresh_tree)
+    self.thread.start()
+    {% endhighlight %}
 
 ## Design of the Data Structure
 Now the tricky part, how should I organize the data structure? The data structure decides how I record and how I organize the data I collect, and that should corresponding with the tree widget structure. 

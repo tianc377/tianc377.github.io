@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Song of the Sea Project Showcase"
+title:  "Song of the Sea UE5 Project Showcase"
 date:   2022-04-19 11:00
 category: shaderposts
 icon: ship-2-fill
