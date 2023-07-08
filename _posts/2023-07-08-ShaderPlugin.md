@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Use HLSL in UE5 as a C++ Plugin"
+title:  "Use HLSL in UE5 by C++ Plugin"
 date:   2023-07-08 09:00
 category: shaderposts
 icon: os-icon-clue
