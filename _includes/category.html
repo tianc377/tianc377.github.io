@@ -2,7 +2,7 @@
 
 {% assign category = page.url | remove:'/' %} <!-- category - переменная из адреса сайта -->
     <header>
-        <h1 class="cat-header" style="text-align: center;">{{category}}</h1>
+        <h2 class="cat-header" style="text-align: center;">{{category}}</h2>
     </header>
 
     <style>
@@ -24,7 +24,7 @@
     	<li>
     		<article>
     			<header>
-    				<h3><a href="{{post.url | prepend: site.baseurl}}">{{post.title}}</a></h3>
+    				<h4><a href="{{post.url | prepend: site.baseurl}}">{{post.title}}</a></h4>
     					<time class="published" datetime="2015-10-20">{{post.date | date: "%d %b %Y %R"}}</time>
     			</header>
     			<a href="{{post.url | relative_url}}" class="image"><img src="{{site.baseurl}}/images/{{ post.icon }}.svg"/></a>
