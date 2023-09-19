@@ -14,23 +14,23 @@
 		line-height: 1.75;
 
 		@include breakpoint(xlarge) {
-			font-size: 14pt;
+			font-size: 12pt;
 		}
 
 		@include breakpoint(large) {
-			font-size: 14pt;
+			font-size: 12pt;
 		}
 
 		@include breakpoint(medium) {
-			font-size: 14pt;
+			font-size: 12pt;
 		}
 
 		@include breakpoint(small) {
-			font-size: 14pt;
+			font-size: 12pt;
 		}
 
 		@include breakpoint(xsmall) {
-			font-size: 14pt;
+			font-size: 12pt;
 		}
 	}
 
@@ -90,15 +90,15 @@
 	}
 
 	h2 {
-		font-size: 1.2em;
+		font-size: 1.4em;
 	}
 
 	h3 {
-		font-size: 1.0em;
+		font-size: 1.2em;
 	}
 
 	h4 {
-		font-size: 0.9em;
+		font-size: 1.0em;
 	}
 
 	h5 {

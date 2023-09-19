@@ -33,7 +33,7 @@ I am working on a texture array shader and I need to pair index of UV region to 
 
 In addition, a <span style="color: #0fc2aa">global shader</span> (shaders that are not created using the Material Editor, operate on fixed geometry) can have more advanced functionality like post-processing effects or a custom shader pass, etc. And it's able to created in a plugin which makes it easy to implement in other projects.
 
-In this post I'am using a rather easy way to include the shader file in custom node in the Material Editor to use the function in the shader file. This could be a good start to get to know how to setup full global shader with blueprint functions after.
+In this post I'am using a rather easy way to include the shader file in custom node in the Material Editor to use the function in the shader file. This could be a good start to get to know how to setup full global shader later.
 
 ## How to
 ### Create Your Plugin

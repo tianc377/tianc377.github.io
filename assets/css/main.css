@@ -1835,7 +1835,7 @@ ul {
         flex-grow: 1;
         -ms-flex: 1; }
         ul.posts article header h3 {
-          font-size: 0.7em;
+          font-size: 1.1em;
           margin-top: 0.125em; }
         ul.posts article header .published {
           display: block;
