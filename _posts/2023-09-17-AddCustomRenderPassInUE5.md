@@ -18,7 +18,7 @@ youtubeId2: atztUZg_GiY
         - [Usf File](#usf-file)
         - [Shader Header File](#shader-header-file)
         - [Shader Cpp File](#shader-cpp-file)
-    - [Insert into the render pipeline](#insert-into-the-render-pipeline)
+    - [Insert Into the Render Pipeline](#insert-into-the-render-pipeline)
         - [SceneViewExtension](#SceneViewExtension)
             - [Cpp File](#cpp-file)
             - [Header File](#header-file)
