@@ -431,6 +431,9 @@ So at this point I've managed to finish a frame of adding a custom render pass a
 <br />
 <!-- > References
     https://docs.unrealengine.com/5.2/en-US/render-dependency-graph-in-unreal-engine/
+    https://docs.unrealengine.com/5.0/en-US/graphics-programming-overview-for-unreal-engine/
+    
+    
     <br /> 
     a <span style="color: #0fc2aa">global shader</span> (shaders that are not created using the Material Editor, operate on fixed geometry) can have more advanced functionality like post-processing effects or a custom shader pass, etc. And it's able to created in a plugin which makes it easy to implement in other projects. 
 <-->
