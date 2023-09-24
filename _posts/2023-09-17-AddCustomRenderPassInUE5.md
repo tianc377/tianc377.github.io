@@ -14,14 +14,18 @@ youtubeId2: atztUZg_GiY
 1. [Extending From Last Post](#extending-from-last-post)
 2. [How To](#how-to)
     - [The Plugin Structure](#the-plugin-structure)
+    - [Add Module to the Project](#add-module-to-the-project)
     - [Shader Files](#shader-files)
         - [Usf File](#usf-file)
         - [Shader Header File](#shader-header-file)
         - [Shader Cpp File](#shader-cpp-file)
     - [Insert Into the Render Pipeline](#insert-into-the-render-pipeline)
-        - [SceneViewExtension](#SceneViewExtension)
-            - [Cpp File](#cpp-file)
-            - [Header File](#header-file)
+        - [SceneViewExtension](#sceneviewextension)
+        - [Cpp File](#cpp-file)
+        - [Header File](#header-file)
+    - [Use Custom Module](#use-custom-module)
+3. [What's Next](#whats-next)
+
          
 
        
@@ -41,47 +45,29 @@ In this post I will note how I manage to do that.
 
 ![ctlib-struct](/post-img/shaderposts/add-renderpass/ctlib-struct.png)<br />
 Compared with last post, there are several files added. <br />
-* First group has Plugin cpp file `CTLib.cpp` and Plugin header file `CTLib.h`. <br />
+* First group has Plugin cpp file `CTLib.cpp` and Plugin header file `CTLib.h`. In last post I've already got these two files, `CTLib.cpp` is the one has shader directory mapping. <br /> 
 * Second group has shader file `CTGlobalShader.usf`, shader header file `CTGlobalShader.h` and shader cpp file `CTGlobalShader.cpp`. <br />
 * Third group has ViewExtension cpp file `CTSceneViewExtension.cpp` and ViewExtension header file `CTSceneViewExtension.h`. <br />
 
-In last post I've already got the Plugin files in first group, `CTLib.cpp` is the one has shader directory mapping. <br /> 
+
+### Add Module to the Project
+
+Compared with last post, there're 4 project files needs to modified in addition in order to add a custom module into the project: <br />
+![addmodule3](/post-img/shaderposts/add-renderpass/addmodule3.png) <br />
+
+* xxx.uproject <br />
+    ![add-module](/post-img/shaderposts/add-renderpass/add-module.png) <br />
+
+* xxx.Build.cs <br />
+    ![add-module2](/post-img/shaderposts/add-renderpass/add-module2.png) <br />
+
+* xxx.Target.cs & xxxEditor.Target.cs <br />
+    ![target-cs.png](/post-img/shaderposts/add-renderpass/target-cs.png) <br />
+
+<br />
+<br />
 
 ### Shader Files
-
-#### Usf File 
-
-`CTGlobalShader.usf` 
-* I wrote a very simple shader as a start, it simply multiplies the scene color with an Input Color.    
-* `ApplyScreenTransform()` is a function from `"/Engine/Private/ScreenPass.ush"`, to transform position to texture UV.  
-* `FScreenTransform SvPositionToInputTextureUV` is a parameter needs to be transfer into when shader is used. 
-* I found above UV transform function from `Engine\Source\Runtime\Renderer\Private\PostProcess\PostProcessBloomSetup.cpp`
-    {% highlight hlsl %}
-    // ----------CTGlobalShader.usf-------------
-    #include "/Engine/Public/Platform.ush"  //need to include this otherwise compilation error: cant found common.ush
-    #include "/Engine/Private/Common.ush"
-    #include "/Engine/Private/ScreenPass.ush"
-
-    // Shader Parameters
-    Texture2D InputTexture;
-    SamplerState InputSampler;
-    float4 InputColor;
-    FScreenTransform SvPositionToInputTextureUV;
-
-    // Fragment Shader
-    void MainPS(
-        float4 SvPosition : SV_POSITION,
-        out float4 OutColor : SV_Target0) 
-    {
-        float2 UV = ApplyScreenTransform(SvPosition.xy, SvPositionToInputTextureUV); 
-        OutColor = Texture2DSample(InputTexture, InputSampler, UV)* InputColor;
-        
-    }
-    {% endhighlight %}
-    
-
-<br /> 
-
 
 #### Shader Header File
 
@@ -126,8 +112,80 @@ In last post I've already got the Plugin files in first group, `CTLib.cpp` is th
     // arguments are: IMPLEMENT_SHADER_TYPE(TemplatePrefix,ShaderClass,SourceFilename,FunctionName,Frequency);
     {% endhighlight %}
 
-
 <br /> 
+
+
+#### Usf File 
+
+`CTGlobalShader.usf` 
+
+    {% highlight hlsl %}
+    // ----------CTGlobalShader.usf-------------
+    #include "/Engine/Public/Platform.ush"  //need to include this otherwise compilation error: cant found common.ush
+    #include "/Engine/Private/Common.ush"
+    #include "/Engine/Private/ScreenPass.ush"
+
+    // Shader Parameters
+    Texture2D InputTexture;
+    SamplerState InputSampler;
+    float4 InputColor;
+    FScreenTransform SvPositionToInputTextureUV;
+
+    // Fragment Shader
+    void MainPS(
+        float4 SvPosition : SV_POSITION,
+        out float4 OutColor : SV_Target0) 
+    {
+        float2 UV = ApplyScreenTransform(SvPosition.xy, SvPositionToInputTextureUV); //*1
+        OutColor = Texture2DSample(InputTexture, InputSampler, UV)* InputColor;
+        
+    }
+    {% endhighlight %}
+* I wrote a very simple shader as a start, it simply multiplies the scene color with an Input Color.    
+* `ApplyScreenTransform()` is a function from `"/Engine/Private/ScreenPass.ush"`, to transform position to texture UV.  
+* `FScreenTransform SvPositionToInputTextureUV` is a parameter needs to be transfer into when shader is used. 
+* *1 `ApplyScreenTransform()`: <br /> 
+![apply-st](/post-img/shaderposts/add-renderpass/apply-st.png) <br /> 
+<!--当SV_POSITION值作为像素着色器的输入时，其xy的值表示当前像素在屏幕空间下的像素坐标加上0.5的偏移量。为什么SV_POSITION.xy相比像素坐标会存在0.5的偏移呢？这是因为像素着色器的SV_POSITION.xy的值实际上是像素中心点对应的屏幕空间坐标，例如800*600分辨率的应用，下标为(0, 0)像素的中心点对应的坐标即为(0.5, 0.5)，下标为(799, 599)像素的中心点对应的坐标即为(799.5, 599.5)。
+DirectX的NDC空间取值范围为x：[-1, 1]，y：[-1, 1]，z：[0, 1]。-->
+
+This is used for transforming `SV_POSITION` from (0 ~ bufferwith) x (0 ~ bufferheight) to 0 ~ 1 as a texture UV. <br /> 
+It will multiply `SV_POSITION.xy` by a Scale and add a Bias. <br /> 
+`FScreenTransform SvPositionToInputTextureUV` defined as a float4 composed with FVector2f Scale and FVector2f Bias, need to get this argument in my viewextension.cpp later<br /> 
+This way of transform coordinates is from most postprocessing shaders in Unreal, but I can also simply use: <br />
+`float2 UV = float4(SvPosition.xy * (1 / ViewportUV.xy), 0.0f, 0.0f);` like below: <br />
+
+{% highlight hlsl %}
+
+    // ----------CTGlobalShader.usf-------------
+    #include "/Engine/Private/Common.ush"
+    #include "/Engine/Private/ScreenPass.ush"
+    #define FVector2f float2
+    Texture2D InputTexture;
+    SamplerState InputSampler;
+    float4 InputColor;
+    FScreenTransform SvPositionToInputTextureUV;
+    FVector2f ViewportUV;
+
+
+    void MainPS(
+        float4 SvPosition : SV_POSITION,
+        out float4 OutColor : SV_Target0) 
+    {
+        float2 UV = float4((SvPosition.xy - 0.5) * (1 / ViewportUV.xy), 0.0f, 0.0f); 
+        OutColor = Texture2DSample(InputTexture, InputSampler, UV) * InputColor;
+        
+    }
+{% endhighlight %}
+
+Where `ViewportUV` is from `FScreenPassTextureViewport(SceneColor).Rect.Width(), FScreenPassTextureViewport(SceneColor).Rect.Height()` later in the `CTSceneViewExtension.cpp` file. 
+
+* **SV_POSITION** in Pixel Shader is the center position of a pixel, so that it has 0.5 offset for each pixel, when we scale SV_POSITION to 0 ~ 1 range, we need to translate pixel position back to (0,0), which is minus 0.5 firstly, then multiply its xy with an inverse scale factor `1/(Viewport.Width, Viewport.Height)`.<br /> 
+![pixel](/post-img/shaderposts/add-renderpass/pixel.png)
+<br /> 
+
+
+
 
 
 ### Insert into the render pipeline
@@ -210,7 +268,7 @@ So for this tool,
 Some documents saying it only works in post-processing stages and no mobile pipeline, but in the header file there's after basepass option and mobile option, dk yet, need to give a try. <br />
 Anyway, I use `PrePostProcessPass_RenderThread` that is the one called right before Post Processing rendering begins. <br />
 
-##### Cpp File
+#### Cpp File
 
 {% highlight cpp %}
 
@@ -227,32 +285,39 @@ Anyway, I use `PrePostProcessPass_RenderThread` that is the one called right bef
 
     void FCTSceneViewExtension::PrePostProcessPass_RenderThread(FRDGBuilder& GraphBuilder, const FSceneView& View, const FPostProcessingInputs& Inputs)
     {	
-        const FIntRect ViewPort = static_cast<const FViewInfo&>(View).ViewRect;
+        const FIntRect ViewPort = static_cast<const FViewInfo&>(View).ViewRect; // *1
         FGlobalShaderMap* GlobalShaderMap = GetGlobalShaderMap(GMaxRHIFeatureLevel);	//GetShader for certain feature level
 
-        RDG_EVENT_SCOPE(GraphBuilder, "CTRenderPass");  //Use RDG_EVENT_SCOPE to add a GPU profile scope around passes. These are consumed by external profilers like RenderDoc, as well as RDG Insights.
+        RDG_EVENT_SCOPE(GraphBuilder, "CTRenderPass"); // *2
 
         FRHISamplerState* PointClampSampler = TStaticSamplerState<SF_Point, AM_Clamp, AM_Clamp, AM_Clamp>::GetRHI();
         Inputs.Validate();
 
         FScreenPassTexture SceneColor((*Inputs.SceneTextures)->SceneColorTexture, ViewPort); 
-        FRDGTextureDesc OutputDesc = SceneColor.Texture->Desc;
-        const FScreenPassRenderTarget Output(GraphBuilder.CreateTexture(OutputDesc, TEXT("CT OUTPUT RT")), ViewPort, ERenderTargetLoadAction::ELoad);
-        // Create a texture with FRDGBuilder::CreateTexture
+        FRDGTextureDesc OutputDesc = SceneColor.Texture->Desc; // *4
+        const FScreenPassRenderTarget Output(GraphBuilder.CreateTexture(OutputDesc, TEXT("CT OUTPUT RT")), ViewPort, ERenderTargetLoadAction::ELoad); // *3
+        
         
         TShaderMapRef<FCTGlobalShaderPS> CTGlobalShaderPS(GlobalShaderMap);
         FCTGlobalShaderPS::FParameters* CTGlobalShaderParameters = GraphBuilder.AllocParameters<FCTGlobalShaderPS::FParameters>(); 
         // Allocate pass parameters with GraphBuilder.AllocParameters assign all relevant RDG resourses used in the execution lambda. 
 
-        CTGlobalShaderParameters->InputTexture = SceneColor.Texture;//SceneColorCopyRenderTarget.Texture;//(*Inputs.SceneTextures)->SceneColorTexture; // Output.Texture;
+        CTGlobalShaderParameters->InputTexture = SceneColor.Texture;
         CTGlobalShaderParameters->SvPositionToInputTextureUV = (
-        FScreenTransform::ChangeTextureBasisFromTo(FScreenPassTextureViewport(Output), FScreenTransform::ETextureBasis::TexelPosition, FScreenTransform::ETextureBasis::ViewportUV) *
-        FScreenTransform::ChangeTextureBasisFromTo(FScreenPassTextureViewport(SceneColor), FScreenTransform::ETextureBasis::ViewportUV, FScreenTransform::ETextureBasis::TextureUV));
+        FScreenTransform::ChangeTextureBasisFromTo( // *5
+            FScreenPassTextureViewport(Output), // *6
+            FScreenTransform::ETextureBasis::TexelPosition, // *7
+            FScreenTransform::ETextureBasis::ViewportUV)  // *8
+            * // multipy by
+        FScreenTransform::ChangeTextureBasisFromTo(
+            FScreenPassTextureViewport(SceneColor), 
+            FScreenTransform::ETextureBasis::ViewportUV, 
+            FScreenTransform::ETextureBasis::TextureUV));
         CTGlobalShaderParameters->InputSampler = PointClampSampler;
         CTGlobalShaderParameters->InputColor = TintColor;
         CTGlobalShaderParameters->RenderTargets[0] = FRenderTargetBinding(SceneColor.Texture, ERenderTargetLoadAction::ELoad); //(FRDGTexture, ELoadAction)
         
-        FPixelShaderUtils::AddFullscreenPass(
+        FPixelShaderUtils::AddFullscreenPass(  // *9
             GraphBuilder,
             GlobalShaderMap, 
             FRDGEventName(TEXT("CTPass")), 
@@ -265,8 +330,48 @@ Anyway, I use `PrePostProcessPass_RenderThread` that is the one called right bef
 
 {% endhighlight %}
 
+*1 `const FIntRect ViewPort = ...` Specify the viewport rect.<br />
 
-##### Header File
+*2 `RDG_EVENT_SCOPE(GraphBuilder, "CTRenderPass");` Use **RDG_EVENT_SCOPE** to add a GPU profile scope around passes. These are consumed by external profilers like RenderDoc, as well as RDG Insights.<br />
+
+*3 `FRDGBuilder::CreateTexture` Create a texture <br />
+
+*4 `OutputDesc` and render target `Output` are established for `SvPositionToInputTextureUV`. <br />
+
+*5 `ChangeTextureBasisFromTo(TextureViewport, SrcBasis, DestBasis)`: <br />
+    ![definition2](/post-img/shaderposts/add-renderpass/definition2.png)<br />
+
+*6 The first argument:<br />
+    `FScreenPassTextureViewport`: <br />
+    ![definition1](/post-img/shaderposts/add-renderpass/definition1.png)<br />
+    // 描述包含在纹理范围内的视图矩形。用于导出纹理坐标变换。<br />
+    This will let us get `TextureViewport.Extent` and `TextureViewport.Rect`.<br />
+
+*7 The second argument:<br />
+    `ETextureBasis::TexelPosition` <br />
+    ![texture-basis](/post-img/shaderposts/add-renderpass/texture-basis.png) <br />
+
+*8 The third argument:<br />
+    `ETextureBasis::ViewportUV` :point_up_2: <br />
+
+
+
+From 5 to 8, these are aming to get a proper scale and bias value to do the transform later in shader to get a proper scene texture uv, this part of code is from postprocess shaders in Unreal such as `Engine\Source\Runtime\Renderer\Private\PostProcess\PostProcessBloomSetup.cpp`. 
+And it can be simply as 
+{% highlight cpp %}
+    CTGlobalShaderParameters->ViewportUV = FVector2f(FScreenPassTextureViewport(SceneColor).Rect.Width(), FScreenPassTextureViewport(SceneColor).Rect.Height());
+{% endhighlight %}
+
+*9 
+`FPixelShaderUtils::AddFullscreenPass` : Dispatch a pixel shader to render graph builder with its parameters. 
+![addfullscreenpass](/post-img/shaderposts/add-renderpass/addfullscreenpass.png) <br />
+
+
+<br />
+
+
+
+#### Header File
 
 {% highlight cpp %}
     // ----------CTSceneViewExtension.h-------------
@@ -292,16 +397,30 @@ Anyway, I use `PrePostProcessPass_RenderThread` that is the one called right bef
 
 {% endhighlight %}
 
+`MYMODULE_API` makes the entire class or functions to be callable outside of module dll. 
+This header fille I took this file from a plugin named Color Correct Regions as a reference: `Engine\Plugins\Experimental\ColorCorrectRegions\Source\ColorCorrectRegions\Public\ColorCorrectRegionsSceneViewExtension.h`
 
 
 
 
 
 
+### Use Custom Module
+
+I simply call the module in an Actor c++ class which built from the engine, then drag that actor into a scene and in play mode it will be called and run.  <br />
+![myactor](/post-img/shaderposts/add-renderpass/myactor.png) <br />
+
+This is the result that shader applied on screen: <br />
+
+![result](/post-img/shaderposts/add-renderpass/result.png){: width="80%" } <br />
+
+If you capture in RenderDoc, the pass is under **PostProcessing** pass:  <br />
+![renderdoc](/post-img/shaderposts/add-renderpass/renderdoc.png) <br />
 
 
+## What's Next
 
-
+So at this point I've managed to finish a frame of adding a custom render pass and custom shaders, then I can start to add more interesting stuff in my global shader to make more complex effect such as a post processing shader or a debug tool shader or etc. It will be a good start to know deeper about Unreal render pipeline and graphics API.
 
 <br />
 
@@ -310,14 +429,8 @@ Anyway, I use `PrePostProcessPass_RenderThread` that is the one called right bef
 
 
 <br />
-References
-
-https://docs.unrealengine.com/5.2/en-US/render-dependency-graph-in-unreal-engine/
-
-
-
-
-<br /> 
-a <span style="color: #0fc2aa">global shader</span> (shaders that are not created using the Material Editor, operate on fixed geometry) can have more advanced functionality like post-processing effects or a custom shader pass, etc. And it's able to created in a plugin which makes it easy to implement in other projects.
-
-<br /> 
+<!-- > References
+    https://docs.unrealengine.com/5.2/en-US/render-dependency-graph-in-unreal-engine/
+    <br /> 
+    a <span style="color: #0fc2aa">global shader</span> (shaders that are not created using the Material Editor, operate on fixed geometry) can have more advanced functionality like post-processing effects or a custom shader pass, etc. And it's able to created in a plugin which makes it easy to implement in other projects. 
+<-->
