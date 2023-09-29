@@ -339,7 +339,7 @@ Anyway, I use `PrePostProcessPass_RenderThread` that is the one called right bef
 
 {% endhighlight %}
 
-*1 `const FIntRect ViewPort = ...` Specify the viewport rect.<br />
+*1 `const FIntRect ViewPort = ...` Specify the viewport rect, it is retrieved from the FSceneView View object by casting it as an FViewInfo object and retrieving the view rect:<br />
 
 *2 `RDG_EVENT_SCOPE(GraphBuilder, "CTRenderPass");` Use **RDG_EVENT_SCOPE** to add a GPU profile scope around passes. These are consumed by external profilers like RenderDoc, as well as RDG Insights.<br />
 
@@ -351,7 +351,8 @@ Anyway, I use `PrePostProcessPass_RenderThread` that is the one called right bef
 <-->
 *3 Create a Point sampler. <br />
 
-*4 Create a ScreenPassTexture and assign the SceneTexture from **FPostProcessingInputs** <br />
+*4 Scene Color is updated incrementally through the post process pipeline: **FPostProcessingInputs** <br />
+If we dont have the **FPostProcessingInputs** argument, for example in **PostRenderBasePassDeferred_RenderThread**, can alternatively use `const FSceneTextures& SceneTextures = FSceneTextures::Get(GraphBuilder);` to retrieve the scene textures.<br />
 
 *5 `ChangeTextureBasisFromTo(TextureViewport, SrcBasis, DestBasis)`: <br />
     ![definition2](/post-img/shaderposts/add-renderpass/definition2.png)<br />
@@ -379,7 +380,7 @@ I tried to understand what `ChangeTextureBasisFromTo` function does, it's compar
 These 4 texture coordinate basis have different range as in the comments above each of them (in the screenshot above), it looks like the four enums are arranged in a progressive order, then in `ChangeTextureBasisFromTo` function, by comparing the source and destination enum, it makes a corresponding calculation that returns a vector4 value composed by FVector2f Scale and FVector2f Bias. <br />
 Take codes from `PostProcessBloomSetup.cpp` as example:<br />
 ![bloom](/post-img/shaderposts/add-renderpass/bloom.png){: width="90%" }<br />
-The `Output` is the render target where pixels will draw on, and `SceneColor` has the viewportUV we want, the first *ChangeTextureBasisFromTo* turn TexelPosition to ViewportUV, the second call turn ViewportUV to TextureUV, multiply the two calls results together I think we get a scale and bias transfrom from TexelPosition to TextureUV. Then this vector4 can be used in shader. <br />
+The `Output` is the render target where pixels will draw on, and `SceneColor` has the viewportUV we want, the first *ChangeTextureBasisFromTo* turn from TexelPosition to ViewportUV, the second call turn from ViewportUV to TextureUV, multiply the two calls results together we get a scale and bias transfrom from TexelPosition to TextureUV. Then this vector4 can be used in shader. <br />
 
 
 In my cpp code above, I put *SceneColor* as FScreenPassTextureViewport argument in both calls, cuz my output render target is also SceneColor. But in my particular case I know what exact coordinates I need, so I just use another simply way to get screen texture UV, it is: <br />
