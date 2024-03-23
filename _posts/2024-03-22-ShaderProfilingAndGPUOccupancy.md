@@ -13,7 +13,7 @@ preview: 1
 2. [VGPRs and Occupancy](#vgprs-and-occupancy)
 3. [Optimize My Shader](#optimize-my-shader)
     - [Reconstruct the Structure](#reconstruct-the-structure)
-    - [Use LUT](#use-lut)
+    - [Use LUT and Write an LUT Generator](#use-lut-and-write-an-lut-generator)
     - [An Interesting Blocker](#an-interesting-blocker)
  
 
@@ -94,7 +94,7 @@ This means I need to reduce more color parameters exposed in the shader. Right n
 
 Using this method I can replace the 18 exposed color pickers (float4) to 18 indices (integer), this finally makes the occupancy to 8. Well, the loss is user experience, after the change the user needs to select color from index 0 to index 255 to get the color instead of choosing color directly in color pickers. <br /> 
 
-### Use LUT
+### Use LUT and Write an LUT Generator
 There’s still something can be optimized:<br /> 
 The predefined color list can be a predefined 256*256 LUT texture having 256 colors in total.<br /> 
 And it’s impossible to let me make this texture manually from Photoshop, it’s not accurate and I’m lazy.<br />  So I wrote a cpp script to generate the color vectors into a texture with 4 columns and 64 colors in each:<br />
