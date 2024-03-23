@@ -12,6 +12,7 @@ preview: 1
 1. [Shader Profiling Tool](#shader-profiling-tool)
 2. [VGPRs and Occupancy](#vgprs-and-occupancy)
 3. [Optimize My Shader](#optimize-my-shader)
+    - [Reconstruct the Structure](#reconstruct-the-structure)
     - [Use LUT](#use-lut)
     - [An Interesting Blocker](#an-interesting-blocker)
  
@@ -51,6 +52,8 @@ Occupancy here means the maximum number of wavefronts that can potentially run o
 <br />
 
 ## Optimize My Shader
+
+### Reconstruct the Structure 
 So that in this screenshot, it shows the register pressure is at a line where I operate a branch:<br /> 
 ![branch](/post-img/shaderposts/shader-gpu-profiling/gup-perf(6).png)<br /> 
 which means the bottleneck is right here, I need to think how to optimize that branch.
