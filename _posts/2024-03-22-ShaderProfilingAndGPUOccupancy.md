@@ -14,7 +14,7 @@ preview: 1
 3. [Optimize My Shader](#optimize-my-shader)
     - [Reconstruct the Structure](#reconstruct-the-structure)
     - [Use LUT and Write an LUT Generator](#use-lut-and-write-an-lut-generator)
-    - [An Interesting Blocker](#an-interesting-blocker)
+    <!-- - [An Interesting Blocker](#an-interesting-blocker) -->
  
 
 ## Shader Profiling Tool
@@ -29,7 +29,7 @@ Not only the devkit from Playstation, but PIX also can show some info about how 
 <br /> 
 
 ## VGPRs and Occupancy
-The shader I need to optimize is a very big shader that it would be used for the current Assassins Creed project I’m working on but also for future AC games. It is an outfit shader that support 16 surface types (cloth, leather, metal), 6 zone IDs (means it can use 1 RGB map to define 6 zones on 1 material to let each zone have its own behavior, for example I have 1 material for 1 outfit but it can be separated into cotton, hemp, leather, linen, iron and bronze, instead of using 6 materials to do so), also it has a pattern system for each zone to have different patterns from a pattern texture array, it also has weathering behaviors (blood, snow, dirt\mud, wetness..), and damage behaviors (wearing, tearing…). All of these demands make it hard to be not heavy, but there must be ways to optimize. <br /> 
+The shader I need to optimize is a very big shader that it would be used for the current project I’m working on but also for the future projects. It is an outfit shader that support 16 surface types (cloth, leather, metal), 6 zone IDs (means it can use 1 RGB map to define 6 zones on 1 material to let each zone have its own behavior, for example I have 1 material for 1 outfit but it can be separated into cotton, hemp, leather, linen, iron and bronze, instead of using 6 materials to do so), also it has a pattern system for each zone to have different patterns from a pattern texture array, it also has weathering behaviors (blood, snow, dirt\mud, wetness..), and damage behaviors (wearing, tearing…). All of these demands make it hard to be not heavy, but there must be ways to optimize. <br /> 
 
 
 This is the stats before the optimization:<br /> 
@@ -105,12 +105,12 @@ And it’s impossible to let me make this texture manually from Photoshop, it’
 This is gonna be easy for me to change any color or modify the sorting. Also it’s a color chart for users to reference where the color they want to use. <br />
 <br />
 
-### An Interesting Blocker
+<!-- ### An Interesting Blocker
 In the dull process of trying everything that could help to reduce VGPRs, there was an interesting blocker:<br />
 ![blocker](/post-img/shaderposts/shader-gpu-profiling/gup-perf(5).png)<br /> 
 I was using the B method and I really believed that to multiply afterwards on the result (B) is gonna be better than to multiply on each one (A), but the truth was opposite. The bottleneck stuck at this line (B) frequently. At that time I was really confused, tried to remove the multiply for all then found the problem was it, but I really need that multiply for sure. Then I tried to multiply before the result directly in the array for each integers, then the register pressure passed, not at this line anymore. <br /> 
 
-One theory I can use to explain is, when all the patternIDIn are still in the integer array, they’re only integers, only 1 number, but after it instanced with the zoneMaskIDIn index, the result is actually in pixel level, every pixel can have different patternID value, at this moment if make multiplication then it multiplies on every pixel instead of just on integers. <br /> 
+One theory I can use to explain is, when all the patternIDIn are still in the integer array, they’re only integers, only 1 number, but after it instanced with the zoneMaskIDIn index, the result is actually in pixel level, every pixel can have different patternID value, at this moment if make multiplication then it multiplies on every pixel instead of just on integers. <br />  -->
 
 
 
