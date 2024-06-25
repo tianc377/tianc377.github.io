@@ -2,7 +2,7 @@
 layout: post
 title:  "Add Custom Render Pass In UE5"
 date:   2023-09-17 21:00
-category: shaderposts
+category: unrealtools
 icon: layers
 keywords: tag1, tag2
 image: add-renderpass.png
@@ -33,7 +33,7 @@ youtubeId2: atztUZg_GiY
 
 ## Extending From Last Post
 In my last post, I tried to write a plugin to use `ush` file as a library file to write shader codes and include it in *custom node* in material editor: <br />
-**[Use HLSL in UE5 by C++ Plugin](https://tianc377.github.io/shaderposts/2023/ShaderPlugin.html)**<br />
+**[Use HLSL in UE5 by C++ Plugin](https://tianc377.github.io/unrealtools/2023/ShaderPlugin.html)**<br />
 This was a good start to set up the dependencies of modules and mapping the shader directory into the correct place. <br />
 With this structure then, I tried to extend it's function and added an actual <span style="color: #0fc2aa">global shader</span> as a custom render pass to Unreal's render pipeline, more importantly, without editing the engine codes. <br />
 In this post I will note how I manage to do that.
@@ -43,7 +43,7 @@ In this post I will note how I manage to do that.
 ### The Plugin Structure
 
 
-![ctlib-struct](/post-img/shaderposts/add-renderpass/ctlib-struct.png)<br />
+![ctlib-struct](/post-img/unrealtools/add-renderpass/ctlib-struct.png)<br />
 Compared with last post, there are several files added. <br />
 * First group has Plugin cpp file `CTLib.cpp` and Plugin header file `CTLib.h`. In last post I've already got these two files, `CTLib.cpp` is the one has shader directory mapping. <br /> 
 * Second group has shader file `CTGlobalShader.usf`, shader header file `CTGlobalShader.h` and shader cpp file `CTGlobalShader.cpp`. <br />
@@ -53,16 +53,16 @@ Compared with last post, there are several files added. <br />
 ### Add Module to the Project
 
 Compared with last post, there're 4 project files needs to modified in addition in order to add a custom module into the project: <br />
-![addmodule3](/post-img/shaderposts/add-renderpass/addmodule3.png) <br />
+![addmodule3](/post-img/unrealtools/add-renderpass/addmodule3.png) <br />
 
 * xxx.uproject <br />
-    ![add-module](/post-img/shaderposts/add-renderpass/add-module.png) <br />
+    ![add-module](/post-img/unrealtools/add-renderpass/add-module.png) <br />
 
 * xxx.Build.cs <br />
-    ![add-module2](/post-img/shaderposts/add-renderpass/add-module2.png) <br />
+    ![add-module2](/post-img/unrealtools/add-renderpass/add-module2.png) <br />
 
 * xxx.Target.cs & xxxEditor.Target.cs <br />
-    ![target-cs.png](/post-img/shaderposts/add-renderpass/target-cs.png) <br />
+    ![target-cs.png](/post-img/unrealtools/add-renderpass/target-cs.png) <br />
 
 <br />
 <br />
@@ -145,7 +145,7 @@ Compared with last post, there're 4 project files needs to modified in addition 
 * `ApplyScreenTransform()` is a function from `"/Engine/Private/ScreenPass.ush"`, to transform position to texture UV.  
 * `FScreenTransform SvPositionToInputTextureUV` is a parameter needs to be transfer into when shader is used. 
 * *1 `ApplyScreenTransform()`: <br /> 
-![apply-st](/post-img/shaderposts/add-renderpass/apply-st.png) <br /> 
+![apply-st](/post-img/unrealtools/add-renderpass/apply-st.png) <br /> 
 <!--当SV_POSITION值作为像素着色器的输入时，其xy的值表示当前像素在屏幕空间下的像素坐标加上0.5的偏移量。为什么SV_POSITION.xy相比像素坐标会存在0.5的偏移呢？这是因为像素着色器的SV_POSITION.xy的值实际上是像素中心点对应的屏幕空间坐标，例如800*600分辨率的应用，下标为(0, 0)像素的中心点对应的坐标即为(0.5, 0.5)，下标为(799, 599)像素的中心点对应的坐标即为(799.5, 599.5)。
 DirectX的NDC空间取值范围为x：[-1, 1]，y：[-1, 1]，z：[0, 1]。-->
 
@@ -180,7 +180,7 @@ This way of transform coordinates is from most postprocessing shaders in Unreal,
 Where `ViewportUV` is from `FScreenPassTextureViewport(SceneColor).Rect.Width(), FScreenPassTextureViewport(SceneColor).Rect.Height()` later in the `CTSceneViewExtension.cpp` file. 
 
 * **SV_POSITION** in Pixel Shader is the center position of a pixel, so that it has 0.5 offset for each pixel, when we scale SV_POSITION to 0 ~ 1 range, we need to translate pixel position back to (0,0), which is minus 0.5 firstly, then multiply its xy with an inverse scale factor `float4((SvPosition.xy - 0.5) * (1 / ViewportUV.xy), 0.0f, 0.0f)`.<br /> 
-![pixel](/post-img/shaderposts/add-renderpass/pixel.png)
+![pixel](/post-img/unrealtools/add-renderpass/pixel.png)
 <br /> 
 
 
@@ -263,7 +263,7 @@ In its header file `\Engine\Source\Runtime\Engine\Public\SceneViewExtension.h`, 
 So for this tool, 
 * it only supports deferred shading pipeline
 * it can insert before or after different passes, in header file there're functions end with _RenderThread:<br />
-![ctlib-struct](/post-img/shaderposts/add-renderpass/renderthread.png){: width="90%" }<br />
+![ctlib-struct](/post-img/unrealtools/add-renderpass/renderthread.png){: width="90%" }<br />
 Some documents saying it only works in post-processing stages and no mobile pipeline, but in the header file there's after basepass option and mobile option, dk yet, need to give a try. <br />
 Anyway, I use `PrePostProcessPass_RenderThread` that is the one called right before Post Processing rendering begins. <br />
 * In its usage description above, the first step is to create a class that inherits from **FSceneViewExtensionBase** and first argument needs to be **const FAutoRegister& AutoRegister**. 
@@ -355,17 +355,17 @@ Anyway, I use `PrePostProcessPass_RenderThread` that is the one called right bef
 If we dont have the **FPostProcessingInputs** argument, for example in **PostRenderBasePassDeferred_RenderThread**, can alternatively use `const FSceneTextures& SceneTextures = FSceneTextures::Get(GraphBuilder);` to retrieve the scene textures.<br />
 
 *5 `ChangeTextureBasisFromTo(TextureViewport, SrcBasis, DestBasis)`: <br />
-    ![definition2](/post-img/shaderposts/add-renderpass/definition2.png)<br />
+    ![definition2](/post-img/unrealtools/add-renderpass/definition2.png)<br />
 
 *6 The first argument:<br />
     `FScreenPassTextureViewport`: <br />
-    ![definition1](/post-img/shaderposts/add-renderpass/definition1.png)<br />
+    ![definition1](/post-img/unrealtools/add-renderpass/definition1.png)<br />
     // 描述包含在纹理范围内的视图矩形。用于导出纹理坐标变换。<br />
     This will let us get `TextureViewport.Extent` and `TextureViewport.Rect`.<br />
 
 *7 The second argument:<br />
     `ETextureBasis::TexelPosition` <br />
-    ![texture-basis](/post-img/shaderposts/add-renderpass/texture-basis.png) <br />
+    ![texture-basis](/post-img/unrealtools/add-renderpass/texture-basis.png) <br />
 
 *8 The third argument:<br />
     `ETextureBasis::ViewportUV` :point_up_2: <br />
@@ -379,7 +379,7 @@ I tried to understand what `ChangeTextureBasisFromTo` function does, it's compar
 
 These 4 texture coordinate basis have different range as in the comments above each of them (in the screenshot above), it looks like the four enums are arranged in a progressive order, then in `ChangeTextureBasisFromTo` function, by comparing the source and destination enum, it makes a corresponding calculation that returns a vector4 value composed by FVector2f Scale and FVector2f Bias. <br />
 Take codes from `PostProcessBloomSetup.cpp` as example:<br />
-![bloom](/post-img/shaderposts/add-renderpass/bloom.png){: width="90%" }<br />
+![bloom](/post-img/unrealtools/add-renderpass/bloom.png){: width="90%" }<br />
 The `Output` is the render target where pixels will draw on, and `SceneColor` has the viewportUV we want, the first *ChangeTextureBasisFromTo* turn from TexelPosition to ViewportUV, the second call turn from ViewportUV to TextureUV, multiply the two calls results together we get a scale and bias transfrom from TexelPosition to TextureUV. Then this vector4 can be used in shader. <br />
 
 
@@ -392,7 +392,7 @@ In my cpp code above, I put *SceneColor* as FScreenPassTextureViewport argument 
 
 *9 
 `FPixelShaderUtils::AddFullscreenPass` : Dispatch a pixel shader to render graph builder with its parameters. 
-![addfullscreenpass](/post-img/shaderposts/add-renderpass/addfullscreenpass.png) <br />
+![addfullscreenpass](/post-img/unrealtools/add-renderpass/addfullscreenpass.png) <br />
 
 
 <br />
@@ -436,14 +436,14 @@ This header fille I took this file from a plugin named Color Correct Regions as 
 ### Use Custom Module
 
 I simply call the module in an Actor c++ class which built from the engine, then drag that actor into a scene and in play mode it will be called and run.  <br />
-![myactor](/post-img/shaderposts/add-renderpass/myactor.png) <br />
+![myactor](/post-img/unrealtools/add-renderpass/myactor.png) <br />
 
 This is the result that shader applied on screen: <br />
 
-![result](/post-img/shaderposts/add-renderpass/result.png){: width="80%" } <br />
+![result](/post-img/unrealtools/add-renderpass/result.png){: width="80%" } <br />
 
 If you capture in RenderDoc, the pass is under **PostProcessing** pass:  <br />
-![renderdoc](/post-img/shaderposts/add-renderpass/renderdoc.png) <br />
+![renderdoc](/post-img/unrealtools/add-renderpass/renderdoc.png) <br />
 
 
 ## What's Next
