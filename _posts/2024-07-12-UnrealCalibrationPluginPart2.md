@@ -149,6 +149,8 @@ I'll introduce each functionality in the following sections. <br />
 
 For those PBR properties calibration, I get and compare the pixel data from the Gbuffer and visualize it through the global shader. However, the textures' data on each material instance is not part of the Gbuffer data; they are per material/mesh information. Converting them into vertex information and visualizing pixel by pixel would be too much hassle and unnecessary. Therefore, I think the easiest way is to pass a flag into the material's base color directly and then convert it in the global shader to override the pixels. <br />
 
+I think if I have time to optimize, the best approach here is to adding a new custom input in the material 
+
 ### Material Function
 I created a material function with several dynamic switches to set x = 1, y = 1, or z = 1, so that I can use these value as flags in the global shader: <br />
 ![mat-function](/post-img/unrealtools/pbr-calibration-tool-part2/mat-function.png)<br />
@@ -252,6 +254,11 @@ TSharedRef<SDockTab> FCTLibModule::OnSpawnPluginTab(const FSpawnTabArgs& SpawnTa
 {% endhighlight %}
 
 `UEditorUtilityWidgetBlueprint` is the class needs for loading a EditorUtilityWidget object. <br />
+
+
+<br />
+
+## More Functionality Can Be Added 
 
 
 
