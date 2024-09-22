@@ -2,7 +2,6 @@
 toc: true
 title: "Unreal Calibration Plugin Part2"
 description: An unreal calibration plugin that can validate PBR values and texture sizes, check illegal materials, vertex color, uv grid in the current scene. 
-author: Tian
 date: 2024-07-12 09:00 +0800
 categories: [unrealtools]
 tags: [C++, Python]
