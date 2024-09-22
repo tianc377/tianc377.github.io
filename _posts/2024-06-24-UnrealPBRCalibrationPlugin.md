@@ -1,27 +1,26 @@
 ---
-layout: post
 title:  "Unreal PBR Calibration Plugin"
+description: Working on an unreal calibration plugin that can validate PBR values on screen.
 date:   2024-06-24 18:00
-category: unrealtools
-icon: draw-pen
-keywords: tag1, tag2
-image: pbr-calibration-tool.png
-preview: 1
+categories: [unrealtools]
+tags: [C++, Python]
+image: /post-img/unrealtools/pbr-calibration-tool-cropped.png
 ---
 
-
-1. [Extending From Last Post](#extending-from-last-post)
+<!-- 1. [Extending From Last Post](#extending-from-last-post)
 2. [Add a New Buffer to Grab GBuffer Data](#add-a-new-buffer-to-save-gbuffer-data)
     - [Use GBuffer Data in the Global Shader](#use-gbuffer-data-in-the-global-shader)
     - [Implement the Pixel Comparison](#implement-the-pixel-comparison)
 3. [Create an Editor Panel](#create-an-editor-panel)
     - [Create Buttons and Call functions](#create-buttons-and-call-functions)
-4. [The Final Look](#the-final-look)
+4. [The Final Look](#the-final-look) -->
    
 
 ## Extending From Last Post
 In my last post, I added a custom render pass into Unreal's render pipeline with a custom global shader through an Unreal plugin: <br />
-**[Add Custom Render Pass in UE5](https://tianc377.github.io/unrealtools/2023/AddCustomRenderPassInUE5.html)**<br />
+
+**[Add Custom Render Pass in UE5](https://tianc377.github.io/unrealtools/2023/AddCustomRenderPassInUE5.html)** <br />
+
 This time, I extended the functionality of my plugin, to let it become a PBR calibration plugin that can be used in editor to calibrate the albedo (brightness for dielectric materials\metallic materials), saturation, roughness range, metalness value. <br />
 
 When I'm working in the current PBR pipeline project, the huge amount of assets making the calibration very difficult, and not everyone reads the documentation or follows the documentation, besides it's not easy to tell whether each gbuffer channel is in valid range or not by just eyeballing. <br />

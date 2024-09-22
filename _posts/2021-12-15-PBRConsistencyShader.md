@@ -1,16 +1,12 @@
 ---
-layout: post
 title: "UE4 Consistency Shader in SubstancePainter/Maya"
 date:   2021-12-15 12:00
-category: shaderposts
-icon: scale
-keywords: tag1, tag2
-image: pbr-consistency.jpg
-preview: 1
-youtubeId: whFFbZq_geQ
+category: [shaderposts]
+tags: [rendering, Unreal, HLSL, SubstancePainter]
+image: /post-img/shaderposts/pbr-consistency.jpg
 ---
 
-
+<!-- 
 1. [The Need](#the-need)
 2. [Substance Painter Unreal-like PBR Shader](#substance-painter-unreal-like-pbr-shader)
     - [SP Shader API](#sp-shader-api)
@@ -25,7 +21,7 @@ youtubeId: whFFbZq_geQ
 
 3. [Maya Unreal-like PBR Shader](#maya-unreal-like-pbr-shader)
 4. [NPR Consistency Shader](#npr-consistency-shader)
-5. [Marmoset Unreal-like PBR Shader](#marmoset-unreal-like-pbr-shader)
+5. [Marmoset Unreal-like PBR Shader](#marmoset-unreal-like-pbr-shader) -->
 
 
 ## The Need

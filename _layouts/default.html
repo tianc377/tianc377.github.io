@@ -1,49 +1,82 @@
-<!DOCTYPE html>
-<html lang="{{ page.lang | default: site.lang | default: "ru" }}">
+---
+layout: compress
+---
 
+<!doctype html>
+
+{% include origin-type.html %}
+
+{% include lang.html %}
+
+{% if site.theme_mode %}
+  {% capture prefer_mode %}data-mode="{{ site.theme_mode }}"{% endcapture %}
+{% endif %}
+
+<!-- `site.alt_lang` can specify a language different from the UI -->
+<html lang="{{ page.lang | default: site.alt_lang | default: site.lang }}" {{ prefer_mode }}>
   {% include head.html %}
 
-  {% if page.title %}
-    <body class="single">
-  {% else %}
-    <body>
-  {% endif %}
+  <body>
+    {% include sidebar.html lang=lang %}
 
-  <div class="toTop">
-    <i class="fas fa-angle-up"></i>  
-  </div>  
+    <div id="main-wrapper" class="d-flex justify-content-center">
+      <div class="container d-flex flex-column px-xxl-5">
+        {% include topbar.html lang=lang %}
 
+        <div class="row flex-grow-1">
+          <main aria-label="Main Content" class="col-12 col-lg-11 col-xl-9 px-md-4">
+            {% if layout.refactor or layout.layout == 'default' %}
+              {% include refactor-content.html content=content lang=lang %}
+            {% else %}
+              {{ content }}
+            {% endif %}
+          </main>
 
-    <div id="wrapper">
+          <!-- panel -->
+          <aside aria-label="Panel" id="panel-wrapper" class="col-xl-3 ps-2 mb-5 text-muted">
+            <div class="access">
+              {% include_cached update-list.html lang=lang %}
+              {% include_cached trending-tags.html lang=lang %}
+            </div>
 
-    {% include header.html %}
+            {% for _include in layout.panel_includes %}
+              {% assign _include_path = _include | append: '.html' %}
+              {% include {{ _include_path }} lang=lang %}
+            {% endfor %}
+          </aside>
+        </div>
 
-    <main class="page-content" aria-label="Content">
-      <div id="main">
-        {{ content }}        
+        <div class="row">
+          <!-- tail -->
+          <div id="tail-wrapper" class="col-12 col-lg-11 col-xl-9 px-md-4">
+            {% for _include in layout.tail_includes %}
+              {% assign _include_path = _include | append: '.html' %}
+              {% include {{ _include_path }} lang=lang %}
+            {% endfor %}
+
+            {% include_cached footer.html lang=lang %}
+          </div>
+        </div>
+
+        {% include_cached search-results.html lang=lang %}
       </div>
-    </main>
-    {% if page.title %}
-     {% include footer.html %}
-    {% else %}
-      {% include index-footer.html %}
-    {% endif %}    
+
+      <aside aria-label="Scroll to Top">
+        <button id="back-to-top" type="button" class="btn btn-lg btn-box-shadow">
+          <i class="fas fa-angle-up"></i>
+        </button>
+      </aside>
     </div>
 
+    <div id="mask"></div>
+
+    {% if site.pwa.enabled %}
+      {% include_cached notification.html lang=lang %}
+    {% endif %}
+
+    <!-- JavaScripts -->
+    {% include js-selector.html lang=lang %}
+
+    {% include_cached search-loader.html lang=lang %}
   </body>
-
-  <!-- Scripts -->
-      <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
-      <script src="{{"/assets/js/skel.min.js" | prepend: site.baseurl}}"></script>
-      <script src="{{"/assets/js/util.js" | prepend: site.baseurl}}"></script>
-      <!--[if lte IE 8]><script src="{{"/assets/js/ie/respond.min.js" | prepend: site.baseurl}}"></script><![endif]-->
-      <script src="{{"/assets/js/main.js" | prepend: site.baseurl}}"></script>
-      <!--script src="{{"/assets/js/viewportchecker.js" | prepend: site.baseurl}}"></script-->
-      <script src="{{"/assets/js/transition.js" | prepend: site.baseurl}}"></script>
-      <script src="{{"/assets/js/targetblank.js" | prepend: site.baseurl}}"></script>
-      <!--script src="{{"/assets/js/animated.js" | prepend: site.baseurl}}"></script-->
-      <script src="{{"/assets/js/scrollTop.js" | prepend: site.baseurl}}"></script>
-
-      {% include analytics.html %}
-
 </html>

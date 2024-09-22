@@ -2,16 +2,11 @@
 layout: post
 title:  "Unity URP Custom Pipeline"
 date:   2021-09-10 09:00
-category: shaderposts
-icon: subtask
-keywords: tag1, tag2
-image: unity-urp.jpg
-preview: 1
-youtubeId: vWOHPEhF99M
-youtubeId2: atztUZg_GiY
-youtubeId3: 9DwjalmyKbE
+category: [shaderposts]
+tags: [Unity, URP]
+image: /post-img/shaderposts/unity-urp.jpg
 ---
-
+<!-- 
 1. [Unity URP](#unity-urp)
     - [URP Shader Structure](#urp-shader-structure)
         - [.shader](#shader)
@@ -20,7 +15,7 @@ youtubeId3: 9DwjalmyKbE
 2. [Custom Lit Shader](#custom-lit-shader)
     - [Custom Rim Light](#custom-rim-light)
 3. [Custom Unlit Shader for Particles](#custom-unlit-shader-for-particles)
-4. [URP Renderer Feature](#urp-renderer-feature)
+4. [URP Renderer Feature](#urp-renderer-feature) -->
 
 ## Unity URP 
 [Unity URP](https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@11.0/manual/index.html)

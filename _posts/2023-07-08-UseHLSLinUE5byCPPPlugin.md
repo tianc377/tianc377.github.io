@@ -1,25 +1,19 @@
 ---
-layout: post
 title:  "Use HLSL in UE5 by C++ Plugin"
 date:   2023-07-08 09:00
-category: unrealtools
-icon: os-icon-clue
-keywords: tag1, tag2
-image: shader-plugin.jpg
-preview: 1
-youtubeId: vWOHPEhF99M
-youtubeId2: atztUZg_GiY
-youtubeId3: 9DwjalmyKbE
+category: [unrealtools]
+tags: [C++, HLSL]
+image: /post-img/unrealtools/shader-plugin.jpg
 ---
 
-1. [Why](#why)
+<!-- 1. [Why](#why)
 2. [How To](#how-to)
     - [Create Your Plugin](#create-your-plugin)
     - [Create a Shader Folder](#created-a-shader-folder)
     - [Virtual Directory Mapping](#virtual-directory-mapping)
     - [Create a usf and ush file](#create-a-usf-and-ush-file)
     - [Include it in a custom node](#include-it-in-a-custom-node)
-3. [Tips](#tips)
+3. [Tips](#tips) -->
 
        
     

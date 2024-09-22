@@ -2,13 +2,9 @@
 layout: post
 title:  "Song of the Sea UE5 Project Showcase"
 date:   2022-04-19 11:00
-category: shaderposts
-icon: ship-2-fill
-keywords: tag1, tag2
-image: light-house-shot.gif
-preview: 0
-youtubeId: whFFbZq_geQ
-youtubeId2: 9OnVEKCszqI
+category: [shaderposts]
+tags: [material, nprshading]
+image: /post-img/shaderposts/light-house-shot.gif
 ---
 
 This post shows rendered images and GIFs of my personal project Song of the Sea. See the technique breakdown post at [Song of the Sea Project Breakdown](https://tianc377.github.io/shaderposts/2022/SongOfTheSeaProject.html)

@@ -2,17 +2,12 @@
 layout: post
 title:  "Stylized Character Rendering"
 date:   2021-10-01 18:00
-category: shaderposts
-icon: brush-line
-keywords: tag1, tag2
-image: cel.jpg
-preview: 1
-youtubeId: vWOHPEhF99M
-youtubeId2: atztUZg_GiY
-youtubeId3: 9DwjalmyKbE
+category: [shaderposts]
+tags: [rendering, HLSL, nprshading, Unreal]
+image: /post-img/shaderposts/cel.jpg
 ---
 
-1. [Ace Force and Under One Person Projects](#ace-force-and-under-one-person-projects)
+<!-- 1. [Ace Force and Hitori no Shita: The Outcast Projects](#ace-force-and-under-one-person-projects)
 2. [Cel Pipeline](#cel-pipeline)
     - [Shadow](#shadow)
         - [Face Shadow by Normal](#face-shadow-by-normal)
@@ -37,10 +32,10 @@ youtubeId3: 9DwjalmyKbE
         - [The Fixed Innerline](#the-fixed-innerline)
         - [The Dynamic Innerline](#the-dynamic-innerline)
 3. [Other Explorations](#other-explorations)
-    
+     -->
 
-## Ace Force and Under One Person Projects
-In *Ace Force* project and *Under One Person* project, I've been mainly in charge of the character shading. The character rendering pipeline developed from Unity to Unreal Engine, from pure cel style to half cel half PBR, with many explorations of the possibilities of stylization.<br />
+## Ace Force and Hitori no Shita: The Outcast Projects
+In *Ace Force* project and *Hitori no Shita: The Outcast* project, I've been mainly in charge of the character shading. The character rendering pipeline developed from Unity to Unreal Engine, from pure cel style to half cel half PBR, with many explorations of the possibilities of stylization.<br />
 ![cel](/post-img/shaderposts/character-shading/cel.jpg){: width="100%" }<br />
 
 
@@ -55,7 +50,7 @@ Well, the shadow does not always follow the light. Some particular areas such as
 While for parts need dynamic shadow, such as face, where you can't make it fixed, but meanwhile want to control the shadow shape, 3D artists manipulate the **normal direction** to get a smooth transition when light direction changes.<br />
 ![luca-face](/post-img/shaderposts/character-shading/luca-face.jpg){: width="30%" } ![luca-face-mesh](/post-img/shaderposts/character-shading/luca-face-mesh.jpg){: width="30%" } ![normal-dir](/post-img/shaderposts/character-shading/normal-dir.jpg){: width="30%" }<br />
 #### Face Shadow by Map
-Later on, in another project *Under One Person II*, we used the gradient map to make the face shadow, which was firstly created by **Genshin Impact**. 
+Later on, in another project *Hitori no Shita: The Outcast II*, we used the gradient map to make the face shadow, which was firstly created by **Genshin Impact**. 
 This method uses a face mask map that contains two channels, R and G:<br />
 ![face-mask-map](/post-img/shaderposts/character-shading/face-mask-map.jpg){: width="20%" } ![face-r](/post-img/shaderposts/character-shading/face-r.jpg){: width="20%" } ![face-g](/post-img/shaderposts/character-shading/face-g.jpg){: width="20%" }<br />
 ![face-shadow-red](/post-img/shaderposts/character-shading/faceshadow-red.gif){: width="80%" }<br />
@@ -96,7 +91,7 @@ As I showed above, the old version of hair specular is pure hand-painted and con
 ![hair-silver](/post-img/shaderposts/character-shading/hair-silver.gif){: width="40%" }<br />  
 ![anisotrophy](/post-img/shaderposts/character-shading/anisotropy.png){: width="40%" }{: width="90%" }<br />
 <span style="font-size:0.8em;">Hair anisotropy specular exploration in <b>Blender</b>.</span><br /> 
-As well as hair shading in another project *Under One Person* in **Unity**:<br /> 
+As well as hair shading in another project *Hitori no Shita: The Outcast* in **Unity**:<br /> 
 ![uc-hair](/post-img/shaderposts/character-shading/uc-hair.gif){: width="70%" }<br />  
 
 
@@ -105,10 +100,10 @@ As well as hair shading in another project *Under One Person* in **Unity**:<br /
 For `Ace Force` project in UE4, dynamic lights integration was revised in `MobileBasePassPixelShader.usf`, as the cel-shading style needs the corresponding cel feeling attenuation such as point lights.<br />
 ![dynamiclight](/post-img/shaderposts/character-shading/dynamic-light.gif){: width="90%" }<br />  
 #### In Unity
-For `Under One Person` project, the project is using Unity URP pipeline, the character shader was un unlit shader originally, therefore how to receive and react to the scene lighting in this 3D game with full point of view is a significant problem. I cannot use realistic light attenuation calculation that comes with Unity URP, since that will create a realistic and volumetric effect on the flat cartoon character, which is not what I want to see:<br />  
+For `Hitori no Shita: The Outcast` project, the project is using Unity URP pipeline, the character shader was un unlit shader originally, therefore how to receive and react to the scene lighting in this 3D game with full point of view is a significant problem. I cannot use realistic light attenuation calculation that comes with Unity URP, since that will create a realistic and volumetric effect on the flat cartoon character, which is not what I want to see:<br />  
 ![soft-attenuation](/post-img/shaderposts/character-shading/soft-attenuation.jpg){: width="30%" }<br />  
 I also need to consider how to make the point lights combine with the character directional light that determined the light and shadow division on the character, therefore I need the lights attenuating with distance, but distributing evenly on the character. Below is the outcome.
-{% include youtubePlayer.html id=page.youtubeId %}
+{% include embed/youtube.html id='vWOHPEhF99M' %}
 [Distance Attenuation Cel Dynamic Lights In Unity](https://youtu.be/vWOHPEhF99M)<br />
 
 ### Sky Diffuse Lighting
@@ -133,7 +128,7 @@ In unity the outline is to add a new pass, and cull front. Same, artists could u
 This line tex is multiplied on the final color, to make some inner line details such as expression lines on face or folds lines on clothing. 
 
 #### The Dynamic Innerline
-For `Under One Person` project, the main character's clothing is loose and soft. Besides, this is a first person view game, I tried to use a method based on camera distance to show and hide the fixed innerline to create a dynamic effect:<br />
+For `Hitori no Shita: The Outcast` project, the main character's clothing is loose and soft. Besides, this is a first person view game, I tried to use a method based on camera distance to show and hide the fixed innerline to create a dynamic effect:<br />
 ![innerline-gif2](/post-img/shaderposts/character-shading/innerline-gif2.gif){: width="70%" }<br />
 <span style="font-size:0.8em;">The blue part is the mask out area based on cam distance.</span>
 
@@ -157,13 +152,13 @@ For `Under One Person` project, the main character's clothing is loose and soft.
 <span style="font-size:0.8em;">Style exploration in **Blender**</span>
 
 
-{% include youtubePlayer.html id=page.youtubeId2 %}
+{% include embed/youtube.html id='atztUZg_GiY' %}
 [PBR Character Style Exploration in Blender](https://youtu.be/atztUZg_GiY)<br />
 
 ![wy-blender](/post-img/shaderposts/character-shading/wy-blender.png){: width="60%" }<br />
 <span style="font-size:0.8em;">Style exploration in **Blender**</span>
 
-{% include youtubePlayer.html id=page.youtubeId3 %}
+{% include embed/youtube.html id='9DwjalmyKbE' %}
 [PBR Merged Cel Shading Character](https://youtu.be/9DwjalmyKbE)
 
 

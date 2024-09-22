@@ -2,15 +2,11 @@
 layout: post
 title:  "Plant Grow Shader"
 date:   2022-03-03 12:00
-category: shaderposts
-icon: flower-pink
-keywords: tag1, tag2
-image: plant-grow.gif
-preview: 1
-youtubeId: whFFbZq_geQ
-youtubeId2: 9OnVEKCszqI
+category: [shaderposts]
+tags: [material, Houdini]
+image: /post-img/shaderposts/plant-grow.gif
 ---
-
+<!-- 
 1. [The Task](#the-task)
 2. [Houdini Pivot Painter](#houdini-pivot-painter)
     - [HDA](#hda)
@@ -20,7 +16,7 @@ youtubeId2: 9OnVEKCszqI
 4. [The Grow Material in Engine](#the-grow-material-in-engine)
     - [Individual Grow](#individual-grow)
     - [Spreading Grow](#spreading-grow)
-    - [The Glittering](#the-glittering)
+    - [The Glittering](#the-glittering) -->
 
 
 ## The Task

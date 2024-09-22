@@ -2,14 +2,11 @@
 layout: post
 title: "UE4 Mobile PBR Pipeline"
 date:   2021-12-15 12:00
-category: shaderposts
-icon: sort-descending
-keywords: tag1, tag2
-image: pipeline.jpg
-preview: 1
-youtubeId: whFFbZq_geQ
+category: [shaderposts]
+tags: [Unreal, rendering, HLSL]
+image: /post-img/shaderposts/pipeline.jpg
 ---
-
+<!-- 
 
 1. [The Need](#the-need)
 2. [The Mobile BasePass Shader](#the-mobile-base-pass-shader)
@@ -34,10 +31,9 @@ youtubeId: whFFbZq_geQ
 10. [EnvBRDFApprox](#envbrdfapprox)
 11. [Add Emission](#addemission;)
 12. [Next Step](#next-step)
+ -->
 
 
-
-![pipeline](/post-img/shaderposts/ue4-pbr-pipeline/pipeline.jpg){: width="90%" }<br />
 
 ## The Need
 No matter developing shader in NPR or PBR, a well-understanding of the default shading pipeline is important, especially in Unreal Engine where all the shader things are packed in their source codes. 

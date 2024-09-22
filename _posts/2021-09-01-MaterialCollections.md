@@ -1,15 +1,9 @@
 ---
-layout: post
 title:  "Special Material Collections"
 date:   2021-09-01 18:00
 category: shaderposts
-icon: polygon
-keywords: tag1, tag2
-image: collections.jpg
-preview: 0
-youtubeId: 8m79FPuX3z4
-youtubeId2: kELv_oin_KI
-
+tags: [CG, material]
+image: /post-img/shaderposts/collections.jpg
 ---
 *This Page has a lot of GIF files, it might take time to load them. 
     
@@ -44,7 +38,8 @@ This Post is a collection of special materials, VFX, scene components, etc.
 ![water](/post-img/shaderposts/collections/uc-water.gif){: width="80%" }<br />
 <span style="font-size:0.8em;">An interactive water material</span>
 
-{% include youtubePlayer.html id=page.youtubeId %}
+
+{% include embed/youtube.html id='8m79FPuX3z4' %}
 [Plant Shader with Wind and Rim Light in URP](https://youtu.be/8m79FPuX3z4)
 
 ![Bush](/post-img/shaderposts/collections/Bush.gif){: width="50%" }<br />
@@ -77,7 +72,7 @@ This Post is a collection of special materials, VFX, scene components, etc.
 ![holography](/post-img/shaderposts/collections/Holography.gif){: width="70%" }<br />
 <span style="font-size:0.8em;">An iridescent material </span>
 
-{% include youtubePlayer.html id=page.youtubeId2 %}
+{% include embed/youtube.html id='kELv_oin_KI' %}
 [Leaving footprints in the sand](https://youtu.be/kELv_oin_KI)
 
 ![trailing](/post-img/shaderposts/collections/trailing.gif){: width="70%" }<br />

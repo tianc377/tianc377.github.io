@@ -2,13 +2,9 @@
 layout: post
 title:  "Song of the Sea UE5 Project Breakdown"
 date:   2022-04-18 16:00
-category: shaderposts
-icon: ship-fill
-keywords: tag1, tag2
-image: saoirse.gif
-preview: 1
-youtubeId: whFFbZq_geQ
-youtubeId2: 9OnVEKCszqI
+category: [shaderposts]
+tags: [material, nprshading]
+image: /post-img/shaderposts/saoirse.gif
 ---
 
 
@@ -329,5 +325,3 @@ Then add this value to the Z channel of the vertex position, done!
 <br />
 <br />
 
-<!-- {% include youtubePlayer.html id=page.youtubeId2 %} -->
-<!--{% include youtubePlayer.html id=page.youtubeId %}-->

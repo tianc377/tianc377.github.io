@@ -1,16 +1,12 @@
 ---
-layout: post
 title:  "Maya Material Manager"
 date:   2022-04-01 11:00
-category: mayatools
-icon: hammer-line-green
-keywords: tag1, tag2
-image: material-manager.png
-preview: 1
-youtubeId: 3AM1T0xZiSY
+category: [mayatools]
+tags: [Maya, Python]
+image: /post-img/mayatools/material-manager.png
 ---
 
-
+<!-- 
 
 1. [Why Need](#why-need)
 
@@ -28,9 +24,9 @@ youtubeId: 3AM1T0xZiSY
 6. [How to Build the Hypershade Network from Saved Data?](#how-to-build-the-hypershade-network-from-saved-data)
     - [Get Material Attributes](#get-material-attributes)
     - [Get Material Connections](#get-material-connections)
-    - [Assign the Material](#assign-the-material)
+    - [Assign the Material](#assign-the-material) -->
 
-{% include youtubePlayer.html id=page.youtubeId %}
+{% include embed/youtube.html id='3AM1T0xZiSY' %}
 [CT Maya Material Manager](https://youtu.be/3AM1T0xZiSY)
 
 <br />

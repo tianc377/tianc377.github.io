@@ -2,15 +2,12 @@
 layout: post
 title:  "Add Custom Render Pass In UE5"
 date:   2023-09-17 21:00
-category: unrealtools
-icon: layers
-keywords: tag1, tag2
-image: add-renderpass.png
-preview: 1
-youtubeId: vWOHPEhF99M
-youtubeId2: atztUZg_GiY
+category: [unrealtools]
+tags: [C++, HLSL]
+image: /post-img/unrealtools/add-renderpass.png
 ---
 
+<!-- 
 1. [Extending From Last Post](#extending-from-last-post)
 2. [How To](#how-to)
     - [The Plugin Structure](#the-plugin-structure)
@@ -24,7 +21,7 @@ youtubeId2: atztUZg_GiY
         - [Cpp File](#cpp-file)
         - [Header File](#header-file)
     - [Use Custom Module](#use-custom-module)
-3. [What's Next](#whats-next)
+3. [What's Next](#whats-next) -->
 
          
 
