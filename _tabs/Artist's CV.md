@@ -17,7 +17,7 @@ order: 4
 
 ###### <img src = "/images/Ubisoft_Montreal_Logo.png"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   2024 Aug - Present, Montreal, CA
 
-Senior Technical Artist <br/>
+###### Senior Technical Artist <br/>
 <br/>
 **Anvil Pipeline**
 - Working on the character rendering\production pipeline improvements that will be applied in all the future projects developed with Anvil engine.
@@ -28,7 +28,7 @@ Senior Technical Artist <br/>
 
 ###### <img src = "/images/Ubisoft_Quebec_Logo.png"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    2022 Aug - 2024 Aug, Quebec City, CA 
 
-##### Senior Technical Artist <br/>
+###### Senior Technical Artist <br/>
 <br/>
 **Assassin's Creed: Shadows** <br/>
 - Developed a comprehensive set of universal character shaders for hair, clothing, and skin, establishing a standardized shader solution for all future Assassin's Creed projects.<br>
