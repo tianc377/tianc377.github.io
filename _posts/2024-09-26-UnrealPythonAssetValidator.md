@@ -180,7 +180,7 @@ So I searched the Label name of that menu by using ripgrep, and found:
 ![redirectors](/post-img/unrealtools/ue-validator/fix-redirectors-c.png){: width="100%" .shadow}
 
 In this cpp file, the last few lines are the part that actually gather redirectors of objects and fix the directors:
-```C++
+```c++
     TArray<UObjectRedirector*> Redirectors;
     for (UObject* Object : Objects)
     {
