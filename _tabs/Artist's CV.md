@@ -2,7 +2,7 @@
 # the default layout is 'page'
 icon: fas fa-info-circle
 order: 4
-published: false 
+published: true 
 ---
 
 <!-- > Add Markdown syntax content to file `_tabs/about.md`{: .filepath } and it will show up on this page.
@@ -22,7 +22,7 @@ published: false
 <br/>
 **Anvil Pipeline**
 
-- Working on the character rendering\production pipeline improvements that will be applied in all the future projects developed with Anvil engine.
+<!-- - Working on the character rendering\production pipeline improvements that will be applied in all the future projects developed with Anvil engine. -->
 
 <br/>
 <br/>
