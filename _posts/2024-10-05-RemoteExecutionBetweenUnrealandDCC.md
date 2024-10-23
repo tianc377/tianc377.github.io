@@ -120,15 +120,54 @@ In `PythonScriptRemoteExecution.cpp`, there's a comment about the `command_resul
 ![re-exe-cpp](/post-img/unrealtools/ue-remote-execution/re-exe-cpp.png){: width="100%" .shadow}
 By calling the `.run_command()` function, it not only returns whether the command was successfully executed, but it can also return an output dictionary. This dictionary indicates the type of output and includes the log of the execution. This means you can format the information you want to pass as a string, giving you more flexibility in handling responses.
 
-TODO..
+
+### command_result
+
+I tested printing the command in Perforce since I'm currently writing a script for it:
+
+![output-test](/post-img/unrealtools/ue-remote-execution/output-test.png){: width="100%" .shadow}
+
+In the script, at the top-left corner, I simply used `.run_command` to execute another function, `error_window()`, from a separate Python file, using `unreal.log_warning()`. On the right side, the command_result displayed keys like `success`, `command`, `result`, and `output`. Inside the `output`, it provided the type as info and returned the warning message I had written in the script.
+
+You may have noticed that the second Python file `perforce_validator_in_ue.py`, which is called by the `run_command()` function, is executed inside Unreal since I was able to use `import unreal` without any issues. This is super useful because the file that executes the remote command is usually within a DCC tool, where Unreal Python modules aren’t accessible. With this remote execution setup, any code that needs to run in Unreal’s Python environment can be placed in a separate script, called inside of Unreal later after the remote connection, and the results can be sent back to the DCC tool. This makes communication between Unreal and external applications much easier.
+
+
+
+
+
+
 
 <br />
 
 ## HTTP signal 
 
-TODO..
+I also explored another method commonly used in Unreal's Remote Control feature. Unreal offers a functionality called [Remote Control](https://dev.epicgames.com/documentation/en-us/unreal-engine/remote-control-for-unreal-engine), which allows you to for example create a standalone web page with a user interface, such as sliders or color pickers, then can use them to control light intensity or adjust the material albedo, that, properties inside of engine. 
+
+```python
+import requests 
+url = "http://localhost:30010/remote/object/call"
+payload = {
+    "objectPath": "/Engine/PythonTypes.Default__HTTPConnectUnreal",
+    "functionName": "get_input",
+    "parameters": {"string": f"{ue_files_paths}"}
+}
+headers = {
+    "Content-Type": "application/json",
+    "User-Agent": "insomnia/10.1.0"
+}
+response = requests.request("PUT", url, json=payload, headers=headers)
+print(response.text)
+```
 
 
+**...TODO...**
+**...TODO...**
+**...TODO...**
+**...TODO...**
+
+
+
+<br />
 
 ## Tips
 
