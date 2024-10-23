@@ -9,18 +9,47 @@ published: true
 {: .prompt-tip } -->
 
 
-
 # <center><img src="/images/color-palette.svg" ><span style="color: #0fc2aa"> Tian Cao </span></center>
-## <center><span style="color: #666666"> Technical Artist</span></center>
+<center><span style="color: #666666"> Technical Artist</span></center>
+<center><img src="/images/email-fill.svg"><span style="color: #666666"> tiancao_ct@outlook.com <img src="/images/linkedin.svg"><a href="https://www.linkedin.com/in/tian-cao-281096135/">LinkedIn</a> </span></center>
+
+<!-- <html>
+<style>
+table, caption, tbody, tfoot, thead, tr, th, td {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+    background: transparent;
+}
+</style>
+<body>
+<center>
+<table style="width:40%">
+  <tr>
+    <th>Company</th>
+    <th>Contact</th>
+    <th>Country</th>
+  </tr>
+</table>
+</center>
+</body>
+</html> -->
+
 
 ## Professional Experience
 
 
-###### <img src = "/images/Ubisoft_Montreal_Logo.png"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   2024 Aug - Present, Montreal, CA
+###### <img src = "/images/Ubisoft_Montreal_Logo.png"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ubisoft Montreal | 2024 Aug - Present, Montreal, CA
 
 ###### Senior Technical Artist <br/>
 <br/>
 **Anvil Pipeline**
+- Focusing on enhancing the character rendering workflows and asset production processes, with plans to roll out improvements across all future Assassin’s Creed projects.
+- Collaborating with engine developers to implement technical solutions that can be applied to current and future projects, with a focus on R&D and integrating new tools into the artists' workflows.
+- Conduct early-stage research and comprehensive feasibility analysis—covering pipeline, performance, visual quality, and project compatibility—ensuring that technical solutions are in place before project mass production begins.
 
 <!-- - Working on the character rendering\production pipeline improvements that will be applied in all the future projects developed with Anvil engine. -->
 
@@ -28,7 +57,7 @@ published: true
 <br/>
 
 
-###### <img src = "/images/Ubisoft_Quebec_Logo.png"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    2022 Aug - 2024 Aug, Quebec City, CA 
+###### <img src = "/images/Ubisoft_Quebec_Logo.png"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ubisoft Quebec | 2022 Aug - 2024 Aug, Quebec City, CA 
 
 ###### Senior Technical Artist <br/>
 <br/>
@@ -42,7 +71,7 @@ published: true
 <br/>
 <br/>
 
-###### <img src = "/images/03_Tencent_English logo.png"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  2019 Jun - 2022 Jun, Shenzhen, CN
+###### <img src = "/images/03_Tencent_English logo.png"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Tencent Games | 2019 Jun - 2022 Jun, Shenzhen, CN
 
 ##### Technical Artist <br/> 
 
