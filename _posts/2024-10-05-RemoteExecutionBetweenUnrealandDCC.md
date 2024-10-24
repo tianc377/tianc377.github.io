@@ -142,6 +142,9 @@ You may have noticed that the second Python file `perforce_validator_in_ue.py`, 
 ## HTTP signal 
 
 I also explored another method commonly used in Unreal's Remote Control feature. Unreal offers a functionality called [Remote Control](https://dev.epicgames.com/documentation/en-us/unreal-engine/remote-control-for-unreal-engine), which allows you to for example create a standalone web page with a user interface, such as sliders or color pickers, then can use them to control light intensity or adjust the material albedo, that, properties inside of engine. 
+There're some official tutorials from Unreal, showing how to use the HTTP remote control: [Getting Started with Unreal Engine and Remote Control API | Unreal Fest 2022](https://www.youtube.com/watch?v=XapljWLWnsk&t=837s)
+
+Below is the code of my file: 
 
 ```python
 import requests 
@@ -159,19 +162,71 @@ response = requests.request("PUT", url, json=payload, headers=headers)
 print(response.text)
 ```
 
+- So the above block of code can be generated from API platform like Insomnia or Postman: 
+    ![insomnia](/post-img/unrealtools/ue-remote-execution/insomnia.png){: width="90%" .shadow}
+    
+- The `url` line after `PUT` follows a fixed format. The variable part is the localhost port number, which you need to check in your Unreal Project settings:
+    
+    ![port-number](/post-img/unrealtools/ue-remote-execution/port-number.png){: width="90%" .shadow}
 
-**...TODO...**
-**...TODO...**
-**...TODO...**
-**...TODO...**
+- In the body, the object path is `/Engine/PythonTypes.Default__` + `class name`. To ensure the class is found, use Unreal decorators `@unreal.uclass()` and `@unreal.ufunction()` to label them (refer to the code above the Insomnia window).
 
+- Then `functionName` is simply the function name you gonna call.
+- The parameters correspond to the function’s arguments; in my example, I used a string.
+- Then the rest `headers = {}`, is generated from Insomnia:
+
+    ![insomnia2](/post-img/unrealtools/ue-remote-execution/insomnia2.png){: width="90%" .shadow}
+
+- Simply copy this code and run it in any DCC that supports Python, and it will send the parameters into Unreal.
+- You’ll need to install the requests module if you don’t already have it.
 
 
 <br />
 
-## Tips
+## Tips: Scripting with Unreal Python
 
+### Plugins
 There are several plugins and features that need to be enabled to access the full functionality related to Python, remote control, and remote executions in Unreal:
 ![plugins](/post-img/unrealtools/ue-remote-execution/plugins.png){: width="100%" .shadow}
 ![project-setting](/post-img/unrealtools/ue-remote-execution/project-setting.png){: width="100%" .shadow}
+
+<br />
+
+### Auto complete 
+- Find the `setting.json` file of Python extension setting:
+![auto-complete](/post-img/unrealtools/ue-remote-execution/auto-complete.png){: width="100%" .shadow}
+- Add the project python folder (where the `unreal.py` located) into the `extraPaths`: 
 ![vscode-settings-json](/post-img/unrealtools/ue-remote-execution/vscode-settings-json.png){: width="100%" .shadow}
+- Voila, I have auto completion when I type unreal API:
+![auto-complete](/post-img/unrealtools/ue-remote-execution/auto-complete.gif){: width="100%" .shadow}
+
+<br />
+
+### debugpy_unreal.py
+- In `...\Engine\Plugins\Experimental\PythonScriptPlugin\Content\Python` there's a file named `debugpy_unreal.py`. This file has some instructions to setup the debug feature in VSCode:
+
+![debugpy](/post-img/unrealtools/ue-remote-execution/debugpy.png){: width="90%" .shadow}
+
+- However, what this file actually does is use pip to install the `debugpy` module in the engine project. I didn't want to create or change anything in the engine project, so I installed it inside my CTLib plugin folder:
+
+![install-debugpy](/post-img/unrealtools/ue-remote-execution/install-debugpy.png){: width="100%" .shadow}
+
+- After installation, the module appeared inside of my plugin's `Python` folder: 
+
+![plugin-folder](/post-img/unrealtools/ue-remote-execution/plugin-folder.png){: width="100%" .shadow}
+
+- Once installed and Unreal restarted, follow the instructions from the `debugpy_unreal.py` file:
+
+![debugpy-step1](/post-img/unrealtools/ue-remote-execution/debugpy-step1.png){: width="90%" .shadow}
+
+- After input `import debugpy_unreal` and `debugpy_unreal.start()`, Unreal will be frozen, 
+
+- Next, use the configuration code from that `debugpy_unreal.py` file in `launch.json`, which you can find by clicking on `Run and Debug` in VSCode:
+
+![launch-json](/post-img/unrealtools/ue-remote-execution/launch-json.png){: width="100%" .shadow}
+
+Inside `pathMappings`, I used the path of the Python folder in my plugin where the debugpy module and all my Python scripts are saved.
+
+After saving the `launch.json` file, run the debugger and set breakpoints in the file you need to debug. Then, import that file inside Unreal, and it will stop at the breakpoint:
+
+![debug-start](/post-img/unrealtools/ue-remote-execution/debug-start.png){: width="100%" .shadow}
