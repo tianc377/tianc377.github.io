@@ -186,6 +186,7 @@ So, I created two populate functions that are triggered when a combobox’s item
 
 Additionally, I'll store each folder's full path in its corresponding **`itemData()`**. This allows easy retrieval of the current selected folder's path when needed.
 
+`PopupDialog()`:
 ```python
 ...
 class PopupDialog(QDialog):
@@ -267,6 +268,7 @@ class PopupDialog(QDialog):
 
 To make the dialog window remember the last selection, I created two additional functions: one to save the current selection to a config file, and another to read this config when populating the comboboxes. This way, I don’t have to reselect items each time I export. The line `export_button = QPushButton(f'Export to: {self.read_last_selection_config(0)[1]}')` in the above code is reading the last selection path and displaying on the export button. 
 
+`create_last_selection_config()`:
 ```python
     ...
     def create_last_selection_config(self, last_path):
@@ -304,31 +306,295 @@ To make the dialog window remember the last selection, I created two additional 
 <br />
 
 
-## Export
+## Export Button Clicked
 
+Below the combobox, there’s an export button that displays the full export path, which updates as the combobox selections change.
+
+In the `export_button_clicked` function, the script performs the following tasks:
+
+- Saves the current combobox selections to the configuration file for easy retrieval next time.
+- Finds or creates a Substance folder to save the current project file.
+- Finds or creates a Textures folder for storing exported textures.
+- Reads the export preset from a JSON file and checks the designated texture paths for existing textures. If textures already exist, they are deleted.
+- Exports textures according to the selected preset and configuration.
+- Calls `send_to_ue` to remotely execute the designated Unreal Engine script with the texture paths.
+
+The code of this part is here:
+
+`export_button_clicked()`:
+```python
+# Export Button Function
+def export_button_clicked(self, button):
+        button_display_path = button.text().replace('Export to: ', '')
+        project_basepath = os.path.dirname(button_display_path).replace('/Textures','')
+        project_basename = os.path.basename(button_display_path).replace('T_','').replace('_$.png', '')
+        sp_project_folder = project_basepath + '/Substance'
+        sp_project_path = project_basepath + f'/Substance/{project_basename}.spp'
+        textures_folder = project_basepath + f'/Textures'
+
+
+        self.create_last_selection_config(button_display_path)
+
+        # Save project file
+        if substance_painter.project.is_open():
+            if not os.path.exists(sp_project_folder):
+                os.mkdir(sp_project_folder)
+            substance_painter.project.save_as(sp_project_path)
+            print(f'The current project has been saved at: {sp_project_path}')
+        else:
+            substance_painter.logging.error("---------There's no project opened---------")
+        
+        # Export textures
+        tex_source_paths = []
+        texture_uedest_paths = []
+        if substance_painter.project.is_open():
+            if not os.path.exists(textures_folder):
+                os.mkdir(textures_folder)
+
+            with open(f'{plugin_path}' + '\my_export_preset.json') as file:
+                preset = json.load(file)
+                for map in preset['maps']:
+                    tex_source_paths.append(textures_folder + '/' + map['fileName'].replace('$project', substance_painter.project.name()) + '.' + map['parameters']['fileFormat'])
+                    texture_uedest_paths.append(textures_folder.replace(f'{self.root_path}', '/Game/Assets'))
+
+                for tex in tex_source_paths:
+                    if os.path.exists(tex):
+                        os.remove(tex)
+            # Export
+            export_config = self.make_export_config(textures_folder) 
+            export_result = substance_painter.export.export_project_textures(export_config)
+            if export_result == substance_painter.export.ExportStatus.Success:
+                print(export_result.message)
+        else:
+            substance_painter.logging.error("---------There's no project opened---------")
+
+        # Send to UE
+        for tex_source_path in tex_source_paths:
+            self.send_to_ue(tex_source_path, sp_project_path, self.root_path)
+```
 
 <br />
 
 ### Substance Painter Export Preset Configuration
 
+- From the above code, in **line 39**, `export_config` is created from a function named `make_export_config()`, then in **line 40**, `substance_painter.export.export_project_textures()` uses this `export_config` as an argument, applying the settings in the configuration to export textures:
+
+`make_export_config()`:
+```python
+
+def make_export_config(self, textures_folder):
+
+    with open(f'{plugin_path}' + '\my_export_preset.json') as file:
+        preset = json.load(file)
+        preset_name = preset['name']
+
+    stack = substance_painter.textureset.get_active_stack()
+
+    export_config = {
+        "exportShaderParams": False,
+        "exportPath": textures_folder,
+        "defaultExportPreset" : preset_name,
+        "exportPresets": [preset],
+        "exportList" : [ { "rootPath" : str(stack) } ]
+        }
+    return export_config
+```
+
+- In this function I open and read a JSON file `my_export_preset.json`, which is basically a json version of Substance Painter's Output Template: 
+![output-template](/post-img/unrealtools/sp-to-unreal-tool/output-template.png){: width="70%" .shadow} 
+- This Json file allows you to specify how texture maps are combined and outputted, detailing settings like file naming conventions, format, resolution, and source channel, destination channel and suffixes required:
+
+`my_export_preset.json`:
+```json 
+
+{
+    "name": "CTPreset",
+    "maps": [
+                {
+                    "fileName": "T_$project_D",
+                    "parameters": {
+                        "bitDepth": "8",
+                        "dithering": false,
+                        "fileFormat": "png",
+                        "paddingAlgorithm": "diffusion",
+                        "dilationDistance": 16
+                        },
+                    "channels": [
+                        {
+                            "destChannel": "R",
+                            "srcChannel": "R",
+                            "srcMapType": "documentMap",
+                            "srcMapName": "basecolor"
+                        },
+                        {
+                            "destChannel": "G",
+                            "srcChannel": "G",
+                            "srcMapType": "documentMap",
+                            "srcMapName": "basecolor"
+                        },
+                        {
+                            "destChannel": "B",
+                            "srcChannel": "B",
+                            "srcMapType": "documentMap",
+                            "srcMapName": "basecolor"
+                        }
+                    ]
+                },
+                {
+                    "fileName": "T_$project_N",
+                    "parameters": {
+                        "bitDepth": "8",
+                        "dithering": false,
+                        "fileFormat": "png",
+                        "paddingAlgorithm": "diffusion",
+                        "dilationDistance": 16
+                        },
+                    "channels": [
+                        {
+                            "destChannel": "R",
+                            "srcChannel": "R",
+                            "srcMapType": "virtualMap",
+                            "srcMapName": "Normal_DirectX"
+                        },
+                        {
+                            "destChannel": "G",
+                            "srcChannel": "G",
+                            "srcMapType": "virtualMap",
+                            "srcMapName": "Normal_DirectX"
+                        },
+                        {
+                            "destChannel": "B",
+                            "srcChannel": "B",
+                            "srcMapType": "virtualMap",
+                            "srcMapName": "Normal_DirectX"
+                        }
+                    ]
+                },
+                {
+                    "fileName": "T_$project_AORM",
+                    "parameters": {
+                        "bitDepth": "8",
+                        "dithering": false,
+                        "fileFormat": "png",
+                        "paddingAlgorithm": "diffusion",
+                        "dilationDistance": 16
+                        },
+                    "channels": [
+                        {
+                            "destChannel": "R",
+                            "srcChannel": "R",
+                            "srcMapType": "documentMap",
+                            "srcMapName": "ambientOcclusion"
+                        },
+                        {
+                            "destChannel": "G",
+                            "srcChannel": "G",
+                            "srcMapType": "documentMap",
+                            "srcMapName": "roughness"
+                        },
+                        {
+                            "destChannel": "B",
+                            "srcChannel": "B",
+                            "srcMapType": "documentMap",
+                            "srcMapName": "metallic"
+                        }
+                    ]
+                }
+            ]
+}
+```
+- Basically, the `config` argument that `substance_painter.export.export_project_textures()` take has to include `exportPath`, `exportPresets` which I saved in a json file, and `exportList` for project that has multiple texture sets. 
+
 
 <br />
 
-### Export Button Clicked
+### Send to UE
 
+I've already covered the details of remote execution from DCC to UE in another post [Remote Execution Between Unreal and DCC](https://tianc377.github.io/posts/RemoteExecutionBetweenUnrealandDCC/).
+In that `export_button_clicked()` function, the `send_to_ue()` function used at line 48 is shown below:
+
+`send_to_ue()`:
+```python
+def send_to_ue(self, tex_source_path, sp_proj_path, root_path):
+        remote_exec = remote.RemoteExecution()
+        remote_exec.start()
+        time.sleep(2) # sleep 2 to let start() work, otherwise no remote node available
+        # Ask for a remote node ID
+        remote_node_id = remote_exec.remote_nodes
+        # Connect to it
+        if remote_node_id:
+            remote_exec.open_command_connection(remote_node_id)
+            exec_mode = 'ExecuteFile' # use this mode to execute a file directly
+            rec = remote_exec.run_command("import import_textures_from_rawdata", exec_mode=exec_mode)    
+            rec = remote_exec.run_command("import importlib", exec_mode=exec_mode)    
+            rec = remote_exec.run_command("importlib.reload(import_textures_from_rawdata)", exec_mode=exec_mode)    
+            if rec['success'] == True:
+                rec = remote_exec.run_command(f"import_textures_from_rawdata.import_texture_to_ue('{tex_source_path}','{sp_proj_path}','{self.root_path}')", exec_mode=exec_mode)  
+        
+                remote_exec.stop() # Other wise will have infinite 'Unhandled remote execution message type "ping"'
+                substance_painter.logging.warning("---------Successfully sent command to Unreal!---------")
+            else:
+                remote_exec.stop()
+                substance_painter.logging.warning("--------Failed send command to Unreal---------")
+        else:        
+            substance_painter.logging.error("---------There's no available editor---------")
+            remote_exec.stop()
+```
+- In the code above, I pass the texture paths to another Python script, `import_textures_from_rawdata.py`. At this point, the script begins executing **within Unreal**.
+
+## In Unreal
+
+### Import Textures
+
+`import_textures_from_rawdata.py`:
+```python
+import unreal
+import os
+import json
+from pathlib import Path
+ue_python_location = os.path.dirname(__file__)#D:/Projects/github/real-playground/RealPlayground/Plugins/CTLib/Content/Python/       
+
+def write_json(data):
+    with open(f'{ue_python_location}/sp_data.json', 'w') as f:
+        json.dump(data, f)
+
+def read_json():
+    with open(f'{ue_python_location}/sp_data.json') as f:
+        data = json.load(f)
+    return data
+
+def import_texture_to_ue(tex_source_path, sp_proj_path, root_path):
+        task = unreal.AssetImportTask()
+        task.automated = True
+        task.destination_name = Path(tex_source_path).stem
+        task.destination_path = os.path.dirname(tex_source_path).replace(f'{root_path}', '/Game/Assets')
+        task.filename = tex_source_path
+        task.replace_existing = True
+        task.save = False
+
+        unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
+
+        try:
+            data = read_json()
+        except:
+            write_json({'ue_dest_path':'sp_proj_path'})
+            data = read_json()
+        ue_dest_path = f'{task.destination_path}/{task.destination_name}'
+        if ue_dest_path not in data:
+            data.update({f'{ue_dest_path}': f'{sp_proj_path}'})
+            write_json(data)
+```
+- Within this script, I used `unreal.AssetImportTask()` class, where `unreal.AssetImportTask().filename` is the source path, and `unreal.AssetImportTask().destination_path` is the target path. Then pass the `task` into `unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks()` to complete the import action. 
+
+- After import, both the source paths and their corresponding Unreal destination paths are recorded in a dictionary saved to a JSON file, `sp_data.json`. This setup allows the source Substance Painter project to be easily located later from Unreal.
 
 <br />
 
-#### Send to UE
+### Add Custom Widget into Menu of Unreal
+
+### Open Texture Source SP Project from Unreal
 
 
-
-<br />
-<br />
-
-## Open Texture Source SP Project from UE
-
-### Add Custom UI into Menu of UE
 
 
 
