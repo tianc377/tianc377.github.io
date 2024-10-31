@@ -7,11 +7,23 @@ image: /post-img/unrealtools/sp-export-cover.png
 published: true
 ---
 
-
-
-
+## Intro
 In the last few posts, I experimented with methods of remote execution between Unreal and DCC tools, which gave me a solid foundation to start developing a tool. This tool will allow users to export textures from Substance Painter and import them into Unreal with a single click, as well as open the source Substance Painter project directly from Unreal's content browser with a right-click. It’s designed to save time on export/import actions and eliminate the hassle of searching for source files. Instead of asking around, artists can easily find the paths and files they need.
 
+<br />
+
+Below shows how the tool works:
+
+`Export from SP to Unreal`:
+![export-to-ue](/post-img/unrealtools/sp-to-unreal-tool/export-to-ue2.gif){: width="100%" .shadow}
+
+<br />
+
+`Open source file from Unreal`:
+![open-with-sp](/post-img/unrealtools/sp-to-unreal-tool/open-with-sp.gif){: width="100%" .shadow}
+
+
+<br />
 
 Before starting the scripting process, I created a simple flowchart to map out the workflow involved in this tool.
 ![flowchart](/post-img/unrealtools/sp-to-unreal-tool/flowchart.png){: width="100%"}
@@ -674,9 +686,7 @@ For opening the source project file, I’ve already stored the source project pa
 
 <br />
 
-## Result
-![export-to-ue](/post-img/unrealtools/sp-to-unreal-tool/export-to-ue2.gif){: width="100%" .shadow}
-![open-with-sp](/post-img/unrealtools/sp-to-unreal-tool/open-with-sp.gif){: width="100%" .shadow}
+
 
 
 
