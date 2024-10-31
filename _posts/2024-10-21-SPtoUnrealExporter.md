@@ -590,19 +590,89 @@ def import_texture_to_ue(tex_source_path, sp_proj_path, root_path):
 
 <br />
 
-### Add Custom Widget into Menu of Unreal
+### Add a Custom Widget into Unreal's Menu
 
-### Open Texture Source SP Project from Unreal
+At this point, I’ve completed the Substance Painter plugin for exporting textures and importing them into Unreal. Now, I want to add a right-click option on Texture2D assets in Unreal to open the source Substance Painter project file directly.
 
+The first step is to add the button.
 
+In Unreal, the `unreal.ToolMenuEntryScript` class allows you to create a new entry and register it in an existing menu. This class also has an `execute()` function that can be overridden with custom code to execute specific actions you defined. 
 
+`UEtoSPMenu()`:
+```python
+@unreal.uclass()
+class UEtoSPMenu(unreal.ToolMenuEntryScript):
+    @unreal.ufunction(override=True)
+    def execute(self, context):
+        data = read_json()
+        sel_obj = unreal.EditorUtilityLibrary.get_selected_assets()[0]
+        sel_obj_path = sel_obj.get_path_name().split('.',1)[0]
+        if sel_obj_path in data:
+            print(f'Find the file at {data[sel_obj_path]}')
+            os.startfile(f'{data[sel_obj_path]}')
+        else:
+            unreal.log_warning("Open in Substance Painter: the texture doesn't have Substance Painter source file")
 
+```
+After defining this class, I can add its instance to a menu using `register_menu_entry()`. Before that, though, I need to find the exact menu name where I want to insert it. To identify existing menu names in Unreal, I used a script to iterate through and print all available menu names:
 
+`list_all_menu_names.py`:
+```python
+def list_all_menu_names(num=1000):
+    menu_list = []
+    for i in range(num):
+        obj = unreal.find_object(None, "/Engine/Transient.ToolMenus_0:RegisteredMenu_%s"%i)
+        if not obj:
+            continue
+    
+        menu_name = str(obj.menu_name)
+
+        menu_list.append(menu_name)
+    return menu_list
+```
+This script iterates through objects named in the format `/Engine/Transient.ToolMenus_0:RegisteredMenu_i`, because all menu objects in Unreal follow this naming convention, with the only difference being the suffix number.
+
+The list of names I got looks like this:
+![list-menu-name](/post-img/unrealtools/sp-to-unreal-tool/list-menu-name.png){: width="100%" .shadow}
+
+The one I need for the textures is `ContentBrowser.AssetContextMenu.Texture`. After I know the name of the entry, I can write the function `insert_menu()`:
+
+`insert_menu()`:
+```python
+def insert_menu():
+    menus = unreal.ToolMenus.get()
+    asset_menu = menus.find_menu('ContentBrowser.AssetContextMenu.Texture')
+    ue_to_sp_obj = UEtoSPMenu()
+    ue_to_sp_obj.init_entry(
+        owner_name = asset_menu.menu_name,
+        menu = asset_menu.menu_name,
+        section = "GetAssetActions",
+        name = "Open in Substance Painter",
+        label = "Open in Substance Painter",
+        tool_tip = "Open the texture in Substance Painter"
+    )
+    ue_to_sp_obj.register_menu_entry()
+
+    ue_to_sp_obj_data = ue_to_sp_obj.data
+    ue_to_sp_obj_icon = unreal.ScriptSlateIcon(style_set_name="UMGStyle", small_style_name="Designer.Icon.Small", style_name="Designer.Icon")
+    ue_to_sp_obj_data.icon = ue_to_sp_obj_icon
+
+    menus.refresh_all_widgets()
+```
+In the code above, the parameters within `.init_entry()`, specifically `label`, `name`, and `section`, serve distinct purposes, as illustrated in the image below:
+
+![entry](/post-img/unrealtools/sp-to-unreal-tool/entry.png){: width="100%" .shadow}
+
+p.s. You can turn on the green debug text by **Editor Preferences -> Display UI Extension Points**
 
 <br />
 
-<br />
+### Open Source Painter Project from Unreal
 
+
+For opening the source project file, I’ve already stored the source project path and the Unreal destination path in a dictionary within a JSON file when importing the textures. In the `execute()` function of the `UEtoSPMenu()` class, the script reads the path of the currently selected texture and checks if it’s in the dictionary. If it is, it uses`os.startfile()` to open the Substance Painter project directly.
+
+<br />
 
 ## Result
 ![export-to-ue](/post-img/unrealtools/sp-to-unreal-tool/export-to-ue2.gif){: width="100%" .shadow}
