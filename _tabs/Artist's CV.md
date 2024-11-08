@@ -86,6 +86,7 @@ table, caption, tbody, tfoot, thead, tr, th, td {
 **Tencent Games : Morefun Studio** &nbsp;&nbsp; 2020 Aug - 2021 Oct <br/>
 *Ace Force*<br/>
 *Hitori no Shita: The Outcast* <br/>
+- Responsible for developing stylized Unity shaders, optimizing and resolving complex rendering challenges to enhance visual quality.
 - Led the transition of Unity NPR shaders to Unreal Engine’s NPR rendering, collaborating with graphics programmers to adapt the render pipeline for stylized visuals.
 - Established lookdev environments and custom toolsets in Maya, Substance Painter, Blender and other DCC tools, for stylized asset production, increasing workflow efficiency.
 - Testing and documenting shaders under various lighting conditions, providing comprehensive guidelines for the art team to achieve consistent visual results.
