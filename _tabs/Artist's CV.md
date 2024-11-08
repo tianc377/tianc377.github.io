@@ -73,15 +73,25 @@ table, caption, tbody, tfoot, thead, tr, th, td {
 
 ###### <img src = "/images/03_Tencent_English logo.png"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Tencent Games | 2019 Jun - 2022 Jun, Shenzhen, CN
 
-##### Technical Artist <br/> 
+###### Technical Artist <br/> 
 
-**Tencent Games : Lightspeed & Quantum Studios** &nbsp;&nbsp; 2021 Oct - 2022 Jun
-- Game for Peace
-- PUBG Mobile
+**Tencent Games : Lightspeed & Quantum Studios** &nbsp;&nbsp; 2021 Oct - 2022 Jun <br/>
+*Game for Peace*<br/>
+*PUBG Mobile*<br/>
+- Responsible for creating material libraries for in-game characters and equipment, optimizing performance to ensure compatibility across various devices.
+- Supported the CG team with VFX materials, environment shaders, and unique animation effects, utilizing Blueprints and scripting to aid in each season’s opening cinematic.
+- Conducted R&D to develop and integrate new technologies to prepare for future projects.
 
-**Tencent Games : Morefun Studio** &nbsp;&nbsp; 2020 Aug - 2021 Oct
-- Ace Force
-- Hitori no Shita: The Outcast
+
+**Tencent Games : Morefun Studio** &nbsp;&nbsp; 2020 Aug - 2021 Oct <br/>
+*Ace Force*<br/>
+*Hitori no Shita: The Outcast* <br/>
+- Led the transition of Unity NPR shaders to Unreal Engine’s NPR rendering, collaborating with graphics programmers to adapt the render pipeline for stylized visuals.
+- Established lookdev environments and custom toolsets in Maya, Substance Painter, Blender and other DCC tools, for stylized asset production, increasing workflow efficiency.
+- Testing and documenting shaders under various lighting conditions, providing comprehensive guidelines for the art team to achieve consistent visual results.
+- Provided specialized materials for effects, post-processing, and environment setups.
+- Delivered blueprint support for the CG rendering team.
+
 
 **Tencent Games : Morefun Studio** &nbsp;&nbsp; 2019 Jun - 2019 Sep
 - Intern
