@@ -109,6 +109,7 @@ Proficient in:
 
 Extensive experience with:
 - Python, Maya Python<br>
+- PySide, PyQt
 - C#<br>
 - Maya <br>
 - Blender, Marmoset<br>
