@@ -48,7 +48,7 @@ table, caption, tbody, tfoot, thead, tr, th, td {
 <br/>
 **Anvil Pipeline**
 - Focusing on enhancing the character rendering workflows and asset production processes, with plans to roll out improvements across all future Assassin’s Creed projects.
-- Collaborating with engine developers to implement technical solutions that can be applied to current and future projects, with a focus on R&D and integrating new tools into the artists' workflows.
+- Collaborating with engine developers to implement technical solutions that can be applied to current and future projects, with a focus on R&D and integrating corresponding tools and plugins into the artists' workflows.
 - Conduct early-stage research and comprehensive feasibility analysis—covering pipeline, performance, visual quality, and project compatibility—ensuring that technical solutions are in place before project mass production begins.
 
 <!-- - Working on the character rendering\production pipeline improvements that will be applied in all the future projects developed with Anvil engine. -->
