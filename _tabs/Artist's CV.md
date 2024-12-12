@@ -108,7 +108,7 @@ Proficient in:
 - Substance Designer, Substance Painter<br>
 
 Extensive experience with:
-- Python, Maya Python<br>
+- Python, Maya.cmds, OpenMaya, MEL<br>
 - PySide, PyQt
 - Maya <br>
 - C#<br>
