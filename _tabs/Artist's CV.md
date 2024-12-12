@@ -11,7 +11,7 @@ published: true
 
 # <center><img src="/images/color-palette.svg" ><span style="color: #0fc2aa"> Tian Cao </span></center>
 <center><span style="color: #666666"> Technical Artist</span></center>
-<center><img src="/images/email-fill.svg"><span style="color: #666666"> tiancao_ct@outlook.com <img src="/images/linkedin.svg"><a href="https://www.linkedin.com/in/tian-cao-281096135/">LinkedIn</a> </span></center>
+<center><img src="/images/email-fill.svg"><span style="color: #666666"> tiancao_ct@outlook.com <img src="/images/linkedin.svg"><a href="https://www.linkedin.com/in/tian-cao-281096135/">LinkedIn</a> <img src="/images/star_fill.svg"><a href="https://tianc377.github.io/">Portfolio</a> </span></center>
 
 <!-- <html>
 <style>
@@ -104,15 +104,17 @@ table, caption, tbody, tfoot, thead, tr, th, td {
 
 Proficient in:
 - HLSL, GLSL, Cg<br>
-- Substance Designer, Substance Painter<br>
 - Unreal Engine, Unity3D <br>
+- Substance Designer, Substance Painter<br>
 
 Extensive experience with:
 - Python, Maya Python<br>
 - PySide, PyQt
-- C#<br>
 - Maya <br>
+- C#<br>
 - Blender, Marmoset<br>
+- Arnold, Vray
+- XGen
 
 Moderately experienced with:
 - C++<br>
