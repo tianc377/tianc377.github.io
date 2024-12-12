@@ -54,7 +54,6 @@ table, caption, tbody, tfoot, thead, tr, th, td {
 <!-- - Working on the character rendering\production pipeline improvements that will be applied in all the future projects developed with Anvil engine. -->
 
 <br/>
-<br/>
 
 
 ###### <img src = "/images/Ubisoft_Quebec_Logo.png"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ubisoft Quebec | 2022 Aug - 2024 Aug, Quebec City, CA 
@@ -68,7 +67,6 @@ table, caption, tbody, tfoot, thead, tr, th, td {
 - Established the character creation workflow for the project, offering tool support including automation scripts, a Substance Painter environment for rapid visual effect validation, and procedural materials in Substance Designer for quick asset production.<br>
 - Conducted batch inspection and processing of art assets, enhancing production efficiency and reducing rework costs.<br>
                 
-<br/>
 <br/>
 
 ###### <img src = "/images/03_Tencent_English logo.png"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Tencent Games | 2019 Jun - 2022 Jun, Shenzhen, CN
@@ -120,6 +118,8 @@ Moderately experienced with:
 - C++<br>
 - Houdini, Clarisse<br>
 
+<br/>
+<br/>
 <br/>
 <br/>
 
