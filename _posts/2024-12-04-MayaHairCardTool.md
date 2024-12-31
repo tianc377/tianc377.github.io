@@ -117,7 +117,7 @@ Below is the function code for **randomly selecting curves** based on the percen
 
 ## Float Qt Slider 
 
-Qt's Slider widget only supports integer values, meaning the slider's step size is limited to 1. To allow for decimal values, you would need to adjust the slider's behavior by manually scaling the values.
+Qt's Slider widget only supports integer values, meaning the slider's minimum step size is limited to 1. To allow for decimal values, you would need to adjust the slider's behavior by manually scaling the values.
 
 So most of my UI consists of a QLabel, a QLineEdit, and a QSlider. For example, with a width property, I want the slider's range to be `(0, 5.0)`. The actual range of my QSlider would be `(0, 500)`. When the slider value changes, it triggers function `update_line_edit_float` that updates the value displayed in the QLineEdit as `QSlider.value()/100`. Similarly, when the QLineEdit value changes, it triggers `update_line_edit_float` to synchronize both UI elements.
 
@@ -135,30 +135,303 @@ For parameters like Column, Row, Angle, Width, and Rotate, I can directly link t
 
 
 ## Taper Curves 
-TODO
+![cmd-curve](/post-img/mayatools/hair-card-tool/cmd-curve.gif){: width="100%" .shadow}
+For the taper functionality, I used Maya's cmds API function `falloffCurveAttr`. This function requires first creating an attribute group node, then add necessary attributes to the ramp node using `addAttr`; and the keys on that curve can be referenced as `xxx.xxxcurve[i]`to add keys on the curve.
+The taper feature code is below:
+```python
+    # Taper Curve
+    if cmd.ls('ramp_node'):
+        cmd.delete('ramp_node')
+    cmd.group(em=True, n = 'ramp_node')
+    cmd.addAttr('ramp_node', attributeType='compound', ln='taper_curve',numberOfChildren = 3, multi=True)
+    cmd.addAttr('ramp_node', at='float', ln='taper_curve_pos', p='taper_curve', defaultValue= 1) #position
+    cmd.addAttr('ramp_node', at='float', ln='taper_curve_val', p='taper_curve', defaultValue= 1) #value
+    cmd.addAttr('ramp_node', at='enum', ln='taper_curve_type', p='taper_curve', enumName = 'None:Linear:Smooth:Spline', defaultValue= 1, min = 0, max = 3) #interp
+    cmd.setAttr('ramp_node.taper_curve[0]', 0, 1, 2) #position, value, interp
+    cmd.setAttr('ramp_node.taper_curve[1]', 0.5, 1, 2) #position, value, interp
+    cmd.setAttr('ramp_node.taper_curve[2]', 0.75, 1, 2) #position, value, interp
+    cmd.setAttr('ramp_node.taper_curve[3]', 1, 1, 2) #position, value, interp
+
+    self.curve_attr = cmd.falloffCurveAttr( 'Taper Curve', h=90, attribute = 'ramp_node.taper_curve', changeCommand = functools.partial(self.update_current_curve_sliders))
+    curve_attr_qwidget = omui.MQtUtil.findControl(self.curve_attr) # Wrap Maya cmd UI to Qt Widget
+    curve_attr_qwidget = wrapInstance(int(curve_attr_qwidget), QtWidgets.QWidget)
+```
 
 ## Length 
-TODO
+![card-length](/post-img/mayatools/hair-card-tool/card_length.gif){: width="100%" .shadow}
+The SweepTool lacks a built-in function to control length. Initially, I tried simply stretching the polygons along the Y-axis, but this caused deformation and didn’t work well for horizontally placed polygons. Later, I used the Extrude function to extend polygons by adding new faces at the ends, and automatically adjusts the division count based on the extended length.
+
+First, the indices of the edges at the very end must be identified. From the sweep attributes, I can obtain the number of polygon columns (e.g., 3). Thus, the last 3 faces correspond to the last row of the card. Among these faces, I locate the third edge, which represents the bottom edge of each quad. These three edges are then stored in a dictionary, preparing them for the next extrusion step.
+
+```python
+    def find_card_edge(self, undo_name):
+        self.undo_on(undo_name)
+        # input = input/100
+        self.sel_cards = cmd.ls(sl = True, type = 'transform')
+        self.extrude_card_edge_dict = {}
+
+        for card in self.sel_cards:
+            if 'sweep' in str(card):
+                card_dp = om.MSelectionList().add(card).getDagPath(0)
+                poly_iter = om.MItMeshPolygon(card_dp)
+                # creator = self.find_sweep_creators() #[['sweepMeshCreator2'], ['sweepMeshCreator3']]
+                shape = cmd.listRelatives(card)
+                creator = cmd.findType(shape, deep=True, type='sweepMeshCreator')[0]
+                segment = cmd.getAttr(f'{creator}.profileArcSegments') # Num of the column of the card
+                face_index_list = []
+                edge_index_list = []
+                for f in poly_iter:
+                    face_index_list.append(f.index())
+                    edge_index_list.append(f.getEdges())
+                last_few_edges = edge_index_list[-segment:]
+                extrude_edges = []
+                for e in last_few_edges:
+                    edge_name = f'{card}.e[{e[2]}]' #the third edge of every face
+                    extrude_edges.append(edge_name)
+                self.extrude_card_edge_dict.update({card:extrude_edges})
+```
+
+In the `exec_extrude_edge` function, I use `MItMeshEdge` to find the length of edge #1 (one of the side edges of the first face), which represents the height of each row. When a length value is entered via the slider, it is divided by the row's height, and the integer result determines the number of divisions. This ensures that divisions are automatically added based on the extended length:
+
+```python
+    def exec_extrude_edge(self, slider, undo_name):
+
+        input = slider.value()/100
+        # Extrude
+        for k in self.extrude_card_edge_dict.keys():
+            print(f'k = {k}')
+            # get edge length:
+            card_dp = om.MSelectionList().add(k).getDagPath(0)
+            edge_iter = om.MItMeshEdge(card_dp)
+
+            edge_length = 1.0  # init
+            for e in edge_iter:
+                if e.index() == 1:
+                    edge_length = e.length()
+                    print(f'edge_length = {edge_length}')
+                    break
+  
+            shape = cmd.listRelatives(k)[0]
+            print(f'shape = {shape}')
+            extrude_node = cmd.findType(shape, deep=True, type = 'polyExtrudeEdge')
+            print(f'extrude_node = {extrude_node}')
+            if extrude_node == None:
+                extrude_node = cmd.polyExtrudeEdge(self.extrude_card_edge_dict[k], lty = 1.0, divisions = 0)
+                print(f'extrude_node2 = {extrude_node}')
+
+            cmd.setAttr(f'{extrude_node[0]}.localTranslateY', input)
+            cmd.setAttr(f'{extrude_node[0]}.smoothingAngle', 60)
+            print(f'{extrude_node[0]}.localTranslateY')
+
+            # Find Division 
+            div = math.floor(input / edge_length)
+            if div < 1:
+                div = 1
+            cmd.setAttr(f'{extrude_node[0]}.divisions', div)
+            print(f'div = {div}')
+            
+        self.undo_off(undo_name)
+```
+
+
 
 ## Filter Cards by Distance to the scalp 
-TODO
+
+![card-filter](/post-img/mayatools/hair-card-tool/card-filter.gif){: width="100%" .shadow}
+
+This feature is designed to filter out polygons closer to the scalp. I calculate the distance between the center of each card and the center of the head mesh, then sort them into a list based on this distance.
+
+```python
+    def make_card_list_by_distance(self):
+        #self.sel_cards = cmd.ls(sl = True)
+        self.dist_dict = {}
+        for card in self.lock_cards:
+            card_center = cmd.objectCenter(card)
+            dist = math.dist(card_center, self.head_center)
+            self.dist_dict.update({card: dist})
+
+        self.dist_dict = dict(sorted(self.dist_dict.items(), key=lambda item: item[1]))
+        #return self.dist_dict
+    
+    def slider_inner_cards_select(self, input):
+        self.make_card_list_by_distance()
+        self.cards_num = len(self.lock_cards)
+
+        cmd.select(clear = 1)
+        input = int(input)
+        if input > self.cards_num:
+            input = self.cards_num
+        for i in range(input):
+            cmd.select(f'{list(self.dist_dict.keys())[i]}', af= True)
+```
+
+
+
+## Move Towards the Scalp
+This feature adjusts the distance between hair cards and the scalp. I find the center point of each card, then by using the `om.MFnMesh.getClosestPoint` function to find the closest point of head scalp to that center point. The cards then move along this vector.
+
+Initially, I calculated the direction vector using head point - card center, but this approach caused inconsistent movement directions for cards positioned on the left and right sides of the head:
+
+![mismatch-direction](/post-img/mayatools/hair-card-tool/mismatch_directions.gif){: width="100%" .shadow}
+
+Ideally, regardless of their location, the cards should always move directly toward the scalp. So, I added a directional check in the function. If the product of the `card_to_head` vector and the `direction` vector is negative, it indicates the moving direction is reversed. In this case, the `direction` vector is multiplied by `-1` to correct it, see the `Line 26-28` in the following code:
+
+```python
+    def slider_lock_move_direction(self):
+        self.new_point_dict = {}
+
+        try:
+            head_dp = om.MSelectionList().add(self.sel_head).getDagPath(0)
+        except:
+            cmd.warning( "No Head Selected" )
+            return
+
+        inner_cards = cmd.ls(sl = True, type = 'transform')
+        if not inner_cards:
+            cmd.warning( "There's no Card Selected" )
+            return
+        
+        head_mesh = om.MFnMesh(head_dp)
+        head_center = cmd.objectCenter(self.sel_head)
+
+        for card in inner_cards:
+            curve = cmd.filterExpand(card, sm = 9)
+            if not curve:
+                #print(f'card:{card}')
+                card_center = cmd.objectCenter(card)
+                card_to_head = om.MVector(head_center) - om.MVector(card_center)
+                closest_head_vert = head_mesh.getClosestPoint(om.MPoint(*card_center))
+                direction = om.MVector(closest_head_vert[0]) - om.MVector(card_center)
+                for i in range(3):
+                    if card_to_head[i] * direction[i] < 0: # Correct the moving direction
+                        direction[i] *= -1                   
+
+
+                direction = om.MVector(*direction).normalize()
+                card_position = cmd.xform(card, query = True, scalePivot = True)
+                card_position = om.MVector(*card_position)
+                
+                self.new_point_dict.update({card: [card_position, direction]})
+
+    # Move function
+    def slider_move_cards_to_closest_face(self, input): 
+        self.undo_on('move dist')       
+        if not self.new_point_dict:
+            return
+        
+        for item in self.new_point_dict.items():
+            new_point =  item[1][0] + item[1][1] *(input/100)
+            cmd.xform(item[0], translation = new_point)
+```
+![match-direction](/post-img/mayatools/hair-card-tool/match_directions.gif){: width="100%" .shadow}
+
+
 
 
 ## Rotate Cards
-TODO
+![rotate-card](/post-img/mayatools/hair-card-tool/card-rotate.gif){: width="100%" .shadow}
 
-## Move Towards Center
-TODO
+Although the Sweep Tool includes a polygon rotation feature, I created a one-click rotation functionality. This tool calculates the center point and normal vector of each card's face, finds the closest point on the scalp to the center point, and determines its normal vector. Using these pairs of normals, it calculates Euler values for rotation, averages them, and applies the average Euler rotation to the card using its center point as the pivot.
+
+`Get Euler between two vectors:`
+```python
+    def get_euler(self, head_closest_normal, card_poly_normal, head_xform, card_xform, card_poly, card_poly_center):
+        head_closest_normal = om.MVector(*head_closest_normal)
+        card_poly_normal = om.MVector(*card_poly_normal)
+        head_xform_mtx = cmd.xform(head_xform, query = True, worldSpace= True, matrix = True)
+        card_xform_mtx = cmd.xform(card_xform, query = True, worldSpace= True, matrix = True)
+        head_matrix = om.MMatrix(head_xform_mtx)
+        card_matrix = om.MMatrix(card_xform_mtx)
+        head_closest_normal *= head_matrix
+        card_poly_normal *= card_matrix
+
+        rotation = card_poly_normal.rotateTo(head_closest_normal)
+        euler = rotation.asEulerRotation().asVector()
+        euler = [x * (180/math.pi) for x in euler]
+
+        return list(euler)
+```
+`Get the two normal vectors from the card and the scalp, average the result and execute rotation`
+```python
+    def rotate_card(self):
+        try:
+            head_dp = om.MSelectionList().add(self.sel_head).getDagPath(0)
+        except:
+            cmd.warning( "No Head Selected" )
+            return
+
+        inner_cards = cmd.ls(sl = True, type = 'transform')
+        if not inner_cards:
+            cmd.warning( "There's no Card Selected" )
+            return
+
+        
+        head_mesh = om.MFnMesh(head_dp)
+        euler= [0,0,0]
+
+        if self.sel_head in inner_cards:
+            inner_cards.remove(f'{self.sel_head}') # Otherwise rotating head causes Maya crash
+
+        for card in inner_cards:
+            curve = cmd.filterExpand(card, sm = 9)
+            if not curve:
+                card_dp = om.MSelectionList().add(card).getDagPath(0)
+
+                card_mesh = om.MFnMesh(card_dp)
+                card_mesh_vert_iter = om.MItMeshVertex(card_dp)
+                card_mesh_poly_iter = om.MItMeshPolygon(card_dp)
+
+                for poly in card_mesh_poly_iter:
+                    card_poly_center = poly.center()
+                    card_poly_normal = poly.getNormal()  
+                    card_poly_xform = f'{card}.f[{poly.index()}]'  
+
+                    head_closest_point, head_closest_normal, head_closest_face_id = head_mesh.getClosestPointAndNormal(card_poly_center) # Only pick the first vert
+
+                    cmd.select(f'{head_dp}.f[{head_closest_face_id}]')
+
+                    # Get the sum up euler from each face
+                    for i in range(3):
+                        euler[i] += self.get_euler(head_closest_normal, card_poly_normal, self.sel_head, card, card_poly_xform, list(poly.center())[:-1])[i]
+                
+                # Get average euler
+                for i in range(3):
+                    euler[i] /= cmd.polyEvaluate(card, face = True)
+
+                # Exec rotate
+                card_poly_center = cmd.objectCenter(card) # use card center as rotate pivot
+                cmd.select(card)
+                cmd.rotate(euler[0], euler[1], euler[2], card, relative = True, p = card_poly_center, os = True, fo = True) 
+
+                cmd.move(0,0,0, f'{card}.scalePivot', f'{card}.rotatePivot')
+                cmd.makeIdentity(card, apply=True)
+
+```
+
 
 ## Live Attach
-TODO
+
+![live-attach](/post-img/mayatools/hair-card-tool/live-attach.gif){: width="100%" .shadow}
+
+Considering the need to closely align the cards to the scalp to create a shell that covers the head, I added a "Live Attach" button. This feature utilizes Maya's Live Surface functionality, allowing each face of the card to snap and conform to the scalp model.
+
 
 ## Live Attach by Root and Weight
 TODO
 
+<br />
+<br />
+
+## Undo Chunk Customization
+
+[Undo Chunk Solution with QSlider](https://www.tech-artists.org/t/need-help-with-qslider-collating-as-1-undo/11534/7)
+TODO
+
+
 
 <br />
 <br />
+
 
 ## UV Editor
 ### QPainter
@@ -173,10 +446,6 @@ TODO
 
 [Simple_MayaDockingClass.py](https://gist.github.com/liorbenhorin/69da10ec6f22c6d7b92deefdb4a4f475)
 
-## Undo Chunk Customization
-
-[Undo Chunk Solution with QSlider](https://www.tech-artists.org/t/need-help-with-qslider-collating-as-1-undo/11534/7)
-TODO
 
 
 
