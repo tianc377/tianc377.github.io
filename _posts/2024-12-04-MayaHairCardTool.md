@@ -417,15 +417,162 @@ Considering the need to closely align the cards to the scalp to create a shell t
 
 
 ## Live Attach by Root and Weight
-TODO
+
+![live-attach-root](/post-img/mayatools/hair-card-tool/live-attach-root.gif){: width="100%" .shadow}
+
+Later, the artists suggested adding a feature to attach only the root of the cards. In response, I introduced a slider to control the number of root faces to attach and adjust the attachment weight.
+
+For this functionality, the first step is to identify the faces at the root of each selected card. When the slider is adjusted, the number of selected root faces increases or decreases accordingly. To achieve this, the current selection of cards needs to be recorded when the slider is pressed to prevent any changes in the target objects during slider adjustments, that's why there's a `lock_card_selection()` called when `sliderPressed()`.
+
+Next, in the face selection function, the first step is to select the faces starting from the root based on the slider value. The second step retrieves the corresponding vertices of the selected faces by `cmd.polyInfo(faceToVertex = True)` and stores them in another list for further processing.
+
+```python
+    def lock_card_selection(self):
+        self.sel_cards = cmd.ls(sl = True, type = 'transform')
+        curves = cmd.filterExpand(self.sel_cards, sm = 9)
+        if curves:
+            self.sel_cards = set(self.sel_cards).difference(set(curves))
+
+
+    def slider_select_faces(self, input):
+        if not self.sel_cards:
+            cmd.warning('No Cards Selected')
+            return
+        self.sel_root_level = input
+
+        card_face_dict = {}
+        self.sel_root_verts = []
+        input = self.clamp(input - 1, 0, 100)
+        cmd.select(clear = True)
+        for card in self.sel_cards:
+            cmd.select(f'{card}.f[0:{input}]', add = True)
+
+        verts = cmd.polyInfo(faceToVertex = True)
+        for f in verts:
+            v = f.split(":")[1].strip().replace('     ', ',').replace(' ', '')
+            vert_list = v.split(',')
+            for item in vert_list:
+                item = int(item)
+                if item not in self.sel_root_verts:
+                    self.sel_root_verts.append(item)
+        self.sel_root_verts = sorted(self.sel_root_verts)
+        self.sel_root_face = cmd.ls(sl = True)
+```
+
+In the second `Root Attach Weight` slider, two functions are called. The first function records the initial positions of the vertices for the selected root faces, performs a live attach on the root, then captures the deformed vertex positions, then reverting the live attach. The second function `live_attach_by_weight` handles the actual displacement. It reads the vertex positions before and after deformation, interpolates between them using a linear interpolation (lerp) with the slider input as the factor, and applies the displacement to the vertices using `cmd.xform()`.
+
+```python
+    def get_all_verts_pos(self):
+
+        if not self.sel_root_face:
+            cmd.warning('No Roots Selected')
+            return
+        if not self.sel_cards:
+            cmd.warning('No Roots Selected')
+            return
+        if not self.sel_head:
+            cmd.warning('No Head Selected')
+            return
+        cmd.makeLive(self.sel_head)
+
+        self.d1 = {}
+        self.d2 = {}
+        for card in self.sel_cards:
+            vert_pos_bf_dict = {}
+            pos_list = []
+            card_dp = om.MSelectionList().add(card).getDagPath(0)
+            vert_iter = om.MItMeshVertex(card_dp)
+            faces_num = cmd.polyEvaluate(card, face = True)
+            for item in vert_iter:
+                # vert_pos_bf = cmd.xform(f'{card}.f[{i}]', q = True, translation = True)[:3] # only save the first xyz
+                mpoint = item.position()
+                index = item.index()
+                vert_pos_bf = []
+                for i in range(3):
+                    vert_pos_bf.append(mpoint[i]) #[0,0,0]
+
+                pos_list.append(vert_pos_bf) #[[0,0,0],[1,1,1],[...]]
+
+                vert_pos_bf_dict.update({index:[pos_list[index]]})
+
+            self.d1.update({card:vert_pos_bf_dict})
+
+            cmd.move(0.001, 0, 0, f'{card}.f[0:{faces_num-1}]', relative=True, xformConstraint='live', constrainAlongNormal = True)
+
+            card_dp_af = om.MSelectionList().add(card).getDagPath(0)
+            vert_iter_af = om.MItMeshVertex(card_dp_af)
+            for item in vert_iter_af:
+                mpoint = item.position()
+                index = item.index()
+                vert_center_af = []
+                for i in range(3):
+                    vert_center_af.append(mpoint[i])
+
+                self.d1[card][index].append(vert_center_af)
+
+            cmd.undo()
+        cmd.makeLive( none=True )
+
+
+
+    def live_attach_by_weight(self, input):
+        if not self.sel_root_face:
+            cmd.warning('No Roots Selected')
+            return
+        if not self.sel_cards:
+            cmd.warning('No Roots Selected')
+            return
+        if not self.sel_head:
+            cmd.warning('No Head Selected')
+            return
+    
+        self.undo_on('undo root weight')
+        input = input/100
+        for card in self.d1:
+            by_vert = self.d1[card]
+            vert_num = len(self.sel_root_verts)
+            # for i in range(self.sel_root_level):
+            for i in range(vert_num):
+                pos_bf = by_vert[i][0]
+                pos_af = by_vert[i][1]
+                new_pos = self.lerp_vector3(pos_bf, pos_af, input)
+                cmd.xform(f'{card}.vtx[{i}]', translation = new_pos)
+```
 
 <br />
 <br />
 
 ## Undo Chunk Customization
 
-[Undo Chunk Solution with QSlider](https://www.tech-artists.org/t/need-help-with-qslider-collating-as-1-undo/11534/7)
-TODO
+When using a Qt Slider to call a function, there’s a common issue: for example, if Function A moves Sphere B upward by 1.0 each time it’s called, a single slider drag might call the function multiple times, such as moving Sphere B by 50.0. Undoing this with CTRL+Z would then require 50 times to fully revert Sphere B to its original position.
+
+If you want the undo action to revert to the state before dragging the slider, you’ll need to use Maya's custom `Undo Chunk` functionality. By wrapping the slider interaction within an undo chunk, all the slider updates during the drag will be treated as a single undoable action, making CTRL+Z efficiently restore the pre-drag state in one step.
+
+
+
+In this thread [Undo Chunk Solution with QSlider](https://www.tech-artists.org/t/need-help-with-qslider-collating-as-1-undo/11534/7), thanks to user **tfox_TD** for providing a solution tailored for sliders. The process involves three main steps:
+
+1. Create a flag initialized in the `__init__` function, set to `False` by default.
+        `self.in_undo = False`
+
+2. Implement two functions: `undo_on()` and `undo_off()`. These will toggle the flag to True or False respectively.
+    ```python
+        def undo_on(self, name):
+            if name == 'none':
+                return
+            if not self.in_undo:
+                self.in_undo = True
+                cmd.undoInfo(openChunk=True, chunkName= name)
+
+        def undo_off(self, name):
+            if self.in_undo:
+                self.in_undo = False
+                cmd.undoInfo(closeChunk=True)
+    ```
+
+3. Connect these functions to the slider's signals using `sliderPressed.connect(undo_on)` and `sliderReleased.connect(undo_off)`. This setup ensures the undo chunk starts when the slider is pressed and ends when released, wrapping the entire drag operation into a single undo action.
+
+p.s. if the actual function is called with `sliderMoved` or `valueChanged`, may also need add the `undo_on()` function into the first line of the called functions.
 
 
 
@@ -434,17 +581,132 @@ TODO
 
 
 ## UV Editor
+
+![uv-editor](/post-img/mayatools/hair-card-tool/uv_editor.gif){: width="100%" .shadow}
+
+Regarding UVs, I spent some time thinking about what kind of tool could truly speed up the process. I envisioned a system where you could intuitively drag the UV in UV editor directly and have the UVs adjust accordingly. This idea became the foundation for developing this part of the tool.
+
+This part reminded me of creating a snow shader where characters leave imprints on a render target, which are then captured and mapped onto the snow's rendering. Inspired by this, I considered implementing a 1:1 UV editor panel that could return mouse-click coordinates. These coordinates could then be mapped back into the UV Editor's layout functionality, enabling precise UV adjustments directly based on user input in a more intuitive way.
+
+
 ### QPainter
-TODO
+
+After some research, I discovered that QPainter can achieve the functionality I need. It allows for custom rendering within a widget.
+
+QPainter also supports events like `mousePressEvent`, `mouseMoveEvent` and `mouseReleaseEvent`, so that can be used for updating the mouse position. 
+
+QPainter can also use functions like drawPixmap, drawLine, and drawRect to render the required pixels. Additionally, it allows for customization of the brush color, thickness, and other attributes, giving flexibility in creating the desired visual effects within the editor. 
+
+I have separated the entire UV Editor part into a different file, and it has its own window class. Below is the code relates to the actual `paintEvent()`
+
+```python
+    def paintEvent(self, event):
+        painter = QtGui.QPainter()
+        painter.begin(self)
+        painter.setOpacity(0.7)
+        painter.drawPixmap(self.margin, self.margin, self.size, self.size, self.im)
+        brush = QtGui.QBrush(QtGui.QColor(255,10,10,255))
+        painter.setBrush(brush)
+        painter.drawRect(QtCore.QRect(self.begin_pos, self.end_pos))
+
+        # draw y axis
+        pen_y_axis = QtGui.QPen(QtGui.QColor(10,10,255,255))
+        pen_y_axis.setWidthF(3)
+        painter.setPen(pen_y_axis)
+        painter.drawLine(self.margin, 0, self.margin,  self.size+200)
+        # draw y axis half
+        pen_y_axis_half = QtGui.QPen(QtGui.QColor(10,255,10,255))
+        pen_y_axis_half.setWidthF(3)
+        painter.setPen(pen_y_axis_half)
+        painter.drawLine(self.margin, self.margin + self.size/2, self.margin, self.margin + self.size)
+
+        # draw y axis thin and figures
+        pen_y_axis_thin = QtGui.QPen(QtGui.QColor(127,0,0,127))
+        pen_y_axis_thin.setWidthF(1)
+        painter.setPen(pen_y_axis_thin)
+        for i in range(11):
+            step = self.size/10
+            painter.drawLine(0, self.margin + self.size - step*i, self.size + 200, self.margin + self.size - step*i)
+        
+        pen_figues = QtGui.QPen(QtGui.QColor(255, 255, 255, 200))
+        painter.setPen(pen_figues)
+        painter.setFont(QtGui.QFont('Decorative', 8))
+        for i in range(11):
+            painter.drawText(QtCore.QPoint(self.margin - 20, self.margin + self.size - 5 - step*i), str(i/10))   
+
+        # draw x axis
+        pen_x_axis = QtGui.QPen(QtGui.QColor(10,10,255,255))
+        pen_x_axis.setWidthF(3)
+        painter.setPen(pen_x_axis)
+        painter.drawLine(0, self.margin + self.size, self.size +  200, self.margin + self.size)
+
+        # draw x axis half
+        pen_x_axis_half = QtGui.QPen(QtGui.QColor(255,10,10,255))
+        pen_x_axis_half.setWidthF(3)
+        painter.setPen(pen_x_axis_half)
+        painter.drawLine(self.margin, self.margin + self.size, self.margin + self.size/2, self.margin + self.size)
+
+        # draw x axis thin
+        pen_x_axis_thin = QtGui.QPen(QtGui.QColor(0,127,0,127))
+        pen_x_axis_thin.setWidthF(1)
+        painter.setPen(pen_x_axis_thin)
+        for i in range(11):
+            step = self.size/10
+            painter.drawLine(self.margin + step*i, 0, self.margin+ step*i, self.size + 200)
+
+        painter.drawLine(0, self.margin + self.size, self.size +  200, self.margin + self.size)
+
+        pen_figues = QtGui.QPen(QtGui.QColor(255, 255, 255, 200))
+        painter.setPen(pen_figues)
+        painter.setFont(QtGui.QFont('Decorative', 8))
+        for i in range(11):
+            painter.drawText(QtCore.QPoint(self.margin + 5 + step*i, self.margin + self.size + 15), str(i/10))    
+
+        # add a HUD figure
+        self.output_start_pos_x = (self.begin_pos.x() -  self.margin)/ self.size
+        self.output_start_pos_y = 1 - (self.begin_pos.y() -  self.margin)/ self.size
+        
+        self.output_end_pos_x =  (self.end_pos.x() - self.margin)/ self.size
+        self.output_end_pos_y = (self.end_pos.y() - self.margin)/ self.size
+        self.output_end_pos_y = 1.0 - self.output_end_pos_y
+        
+        self.draw_pos(painter, f'start:[{self.output_start_pos_x}, {self.output_start_pos_y}] end:[{self.output_end_pos_x}, {self.output_end_pos_y}]')
+
+        painter.end()
+
+    def mousePressEvent(self, event):
+        self.begin_pos = event.pos()
+        self.end_pos = event.pos()
+        self.update()
+
+    def mouseMoveEvent(self, event):
+        self.end_pos = event.pos()
+        self.update()
+
+    def mouseReleaseEvent(self, event):
+        #self.begin_pos = event.pos()
+        self.end_pos = event.pos()
+
+        self.update()
+
+```
 
 
-
-
+<br />
+<br />
 ## WorkspaceControl
 
-TODO
-
+At first, the workspaceControl framework was simple, but after compiling the script into a .pyd file, I encountered an issue where it could not open after being launched once. I wasn’t sure what went wrong, so after researching, I found a very useful workspace control template that helped resolve the problem:
 [Simple_MayaDockingClass.py](https://gist.github.com/liorbenhorin/69da10ec6f22c6d7b92deefdb4a4f475)
+
+This template had one small issue that only appeared after compiling into a .pyd file: when the window is manually closed, attempting to reopen the plugin window throws an "Internal C++ object already deleted" error. 
+![wc-error](/post-img/mayatools/hair-card-tool/wc-error.jpg){: width="100%" .shadow}
+
+After investigating, I found that the script tried to delete the instance to prevent duplicate windows, but it couldn't find the object to delete if the window was already closed manually:
+![wc-problem](/post-img/mayatools/hair-card-tool/wc-problem.jpg){: width="100%" .shadow}
+
+The solution was to add a try-except block to handle the situation:
+![wc-fix](/post-img/mayatools/hair-card-tool/wc-pix.jpg){: width="100%" .shadow}
 
 
 
