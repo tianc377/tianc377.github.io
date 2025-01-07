@@ -692,6 +692,36 @@ I have separated the entire UV Editor part into a different file, and it has its
 ```
 
 
+
+### UV Reuniform
+
+![uv-reuniform](/post-img/mayatools/hair-card-tool/uv-re-uniform-2.gif){: width="100%" .shadow}
+
+Initially, my UV batch editor simply allowed translating the entire UV layout to a new position by inputting a layout value. However, during testing, I noticed an issue: if UVs were modified and rows or columns were added to the card afterward, the UVs would distort and broken. To resolve this, I added a "Re-Uniform" function. This function retrieves the row and column count, calculates where the vertices should be positioned, and adjusts the UVs into a 1:1 evenly distributed grid to prevent distortion.
+
+```python
+    def reuniform_uv(self, card):
+        shape = cmd.listRelatives(card)
+        creator = cmd.findType(shape, deep=True, type='sweepMeshCreator')[0]
+        c = cmd.getAttr(f'{creator}.profileArcSegments')    
+        r = cmd.getAttr(f'{creator}.interpolationSteps')    
+        verts_per_row = c + 1
+        width = 1.0 / c
+        height = 1.0 / r
+        pos_0 = [1,1] # top right corner
+        pos_list = [pos_0]
+        verts_num = cmd.polyEvaluate(card, vertex = True)
+        for i in range(1, verts_num):
+            pos_x_next = pos_0[0] - width * (i % verts_per_row) 
+            pos_y_next = pos_0[1] - height * math.floor(i / verts_per_row)
+            pos_list.append([pos_x_next, pos_y_next])
+            # print(i, pos_x_next, pos_y_next)
+            cmd.polyEditUV(f'{card}.vtx[{i}]', relative=False, uValue = pos_x_next, vValue = pos_y_next)
+        # print(pos_list)
+        cmd.polyEditUV(f'{card}.vtx[0]', relative=False, uValue = pos_0[0], vValue = pos_0[1])
+```
+
+
 <br />
 <br />
 ## WorkspaceControl
