@@ -62,6 +62,7 @@ table, caption, tbody, tfoot, thead, tr, th, td {
 <br/>
 **Assassin's Creed: Shadows** <br/>
 - Developed a comprehensive set of universal character shaders for hair, clothing, and skin, establishing a standardized shader solution for all future Assassin's Creed projects.<br>
+- Establish and define asset guidelines, including specifications, budgets, and review criteria.<br>
 - Provided ongoing support for all Assassin's Creed projects in development that utilized the universal character shaders.<br>
 - Identified and resolved shader performance bottlenecks, optimizing GPU occupancy.<br>
 - Established the character creation workflow for the project, offering tool support including automation scripts, a Substance Painter environment for rapid visual effect validation, and procedural materials in Substance Designer for quick asset production.<br>
